@@ -7,6 +7,7 @@ import "../../../public/admin/css/ManageCategory.css";
 
 const ManageCategories: React.FC = () => {
     const [categories, setCategories] = useState<any[]>([]);
+    const [filteredCategories, setFilteredCategories] = useState<any[]>([]); // Thêm state cho danh mục đã lọc
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
     const [isDetailModalVisible, setIsDetailModalVisible] = useState<boolean>(false);
     const [editCategory, setEditCategory] = useState<any>(null);
@@ -15,12 +16,27 @@ const ManageCategories: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 5;
     const [totalCategories, setTotalCategories] = useState(0);
+    const [searchName, setSearchName] = useState<string>("");
 
     const getToken = () => localStorage.getItem("token");
 
     useEffect(() => {
         fetchCategories();
     }, [currentPage]);
+
+    // Lọc danh mục khi searchName thay đổi
+    useEffect(() => {
+        if (searchName) {
+            const filtered = categories.filter((category) =>
+                category.TenDanhMuc.toLowerCase().includes(searchName.toLowerCase())
+            );
+            setFilteredCategories(filtered);
+            setTotalCategories(filtered.length); // Tổng số danh mục tìm được
+        } else {
+            setFilteredCategories(categories); // Không có tìm kiếm thì trả lại tất cả danh mục
+            setTotalCategories(categories.length);
+        }
+    }, [searchName, categories]);
 
     const fetchCategories = async () => {
         try {
@@ -30,6 +46,7 @@ const ManageCategories: React.FC = () => {
                 params: { page: currentPage - 1, size: pageSize },
             });
             setCategories(data.content);
+            setFilteredCategories(data.content); // Cập nhật filteredCategories ngay khi lấy dữ liệu
             setTotalCategories(data.totalElements);
         } catch (error) {
             console.error("Error fetching categories:", error);
@@ -104,14 +121,34 @@ const ManageCategories: React.FC = () => {
         setIsDetailModalVisible(false);
     };
 
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchName(e.target.value);
+        setCurrentPage(1);  // Reset về trang 1 khi thay đổi tìm kiếm
+    };
+
     return (
         <div className="manage-categories-container">
             <h1>Quản lý danh mục khóa học</h1>
+
+            {/* Tìm kiếm */}
+            <div className="filter-search-container">
+                <Form.Item label="Tìm kiếm theo tên" style={{ marginBottom: 0 }}>
+                    <Input
+                        type="text"
+                        className="form-control"
+                        value={searchName}
+                        onChange={handleSearchChange}
+                        placeholder="Nhập tên danh mục"
+                    />
+                </Form.Item>
+            </div>
+
             <Button type="primary" icon={<PlusOutlined />} onClick={handleAddCategory}>
                 Thêm danh mục
             </Button>
+
             <div style={{ marginTop: "20px" }}>
-                {categories.map((category) => (
+                {filteredCategories.map((category) => (
                     <Card key={category.IDDanhMuc} className="category-card">
                         <div className="category-info">
                             <div className="category-name">{category.TenDanhMuc}</div>
@@ -160,7 +197,7 @@ const ManageCategories: React.FC = () => {
                     <Form.Item
                         label="Tên danh mục"
                         name="TenDanhMuc"
-                        rules={[{ required: true, message: "Vui lòng nhập tên danh mục!" }]}>
+                        rules={[{ required: true, message: "Vui lòng nhập tên danh mục!" }]} >
                         <Input />
                     </Form.Item>
                 </Form>
@@ -175,8 +212,8 @@ const ManageCategories: React.FC = () => {
             >
                 {detailCategory && (
                     <div>
-                        <div><strong>ID danh mục:   </strong> {detailCategory.IDDanhMuc}</div>
-                        <div><strong>Tên danh mục:  </strong> {detailCategory.TenDanhMuc}</div>
+                        <div><strong>ID danh mục: </strong> {detailCategory.IDDanhMuc}</div>
+                        <div><strong>Tên danh mục: </strong> {detailCategory.TenDanhMuc}</div>
                     </div>
                 )}
             </Modal>

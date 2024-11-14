@@ -16,21 +16,35 @@ const ManagePromotions: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 5;
     const [totalPromotions, setTotalPromotions] = useState(0);
+    const [searchName, setSearchName] = useState<string>("");
 
     const getToken = () => localStorage.getItem("token");
 
     useEffect(() => {
         fetchPromotions();
-    }, [currentPage]);
+    }, [currentPage, searchName]);
 
     const fetchPromotions = async () => {
         try {
             const token = getToken();
+            const params: any = { page: currentPage - 1, size: pageSize };
+
+            // Thêm điều kiện tìm kiếm tên vào params nếu có
+            if (searchName) {
+                params.searchName = searchName;
+            }
+
             const { data } = await axios.get(`${BASE_URL}/khuyenmai/all`, {
                 headers: { Authorization: `Bearer ${token}` },
-                params: { page: currentPage - 1, size: pageSize },
+                params,
             });
-            setPromotions(data.data || []);  
+
+            // Lọc khuyến mãi theo tên nếu có searchName
+            const filteredPromotions = data.data.filter((promotion: any) =>
+                promotion.TenKhuyenMai.toLowerCase().includes(searchName.toLowerCase())
+            );
+
+            setPromotions(filteredPromotions);
             setTotalPromotions(data.totalElements);
         } catch (error) {
             console.error("Error fetching promotions:", error);
@@ -117,9 +131,28 @@ const ManagePromotions: React.FC = () => {
         setIsDetailModalVisible(false);
     };
 
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchName(e.target.value);
+        setCurrentPage(1);  // Reset về trang 1 mỗi khi tìm kiếm
+    };
+
     return (
         <div className="manage-promotions-container">
             <h1>Quản lý khuyến mãi</h1>
+            <div className="filter-search-container">
+                <div className="search-container" style={{ width: '100%' }}>
+                    <Form.Item label="Tìm kiếm theo tên" style={{ marginBottom: 0 }}>
+                        <Input
+                            type="text"
+                            className="form-control"
+                            value={searchName}
+                            onChange={handleSearchChange}
+                            placeholder="Nhập tên khuyến mãi"
+                        />
+                    </Form.Item>
+                </div>
+            </div>
+
             <Button type="primary" icon={<PlusOutlined />} onClick={handleAddPromotion}>
                 Thêm khuyến mãi
             </Button>
@@ -129,7 +162,8 @@ const ManagePromotions: React.FC = () => {
                     promotions.map((promotion) => (
                         <Card key={promotion.IDKhuyenMai} className="promotion-card">
                             <div className="promotion-info">
-                                <div className="promotion-name">{promotion.TenKhuyenMai}</div>
+                                <div className="promotion-id">ID: {promotion.IDKhuyenMai}</div>
+                                <div className="promotion-name">Tên khuyến mãi: {promotion.TenKhuyenMai}</div>
                             </div>
                             <div className="promotion-actions">
                                 <Button
@@ -197,16 +231,14 @@ const ManagePromotions: React.FC = () => {
                 onCancel={handleDetailModalCancel}
                 footer={null}
             >
-                {detailPromotion && (
-                    <div>
-                        <div><strong>Tên khuyến mãi:</strong> {detailPromotion.TenKhuyenMai}</div>
-                        <div><strong>Mô tả:</strong> {detailPromotion.MoTaKhuyenMai}</div>
-                        <div><strong>Loại khuyến mãi:</strong> {detailPromotion.LoaiKhuyenMai}</div>
-                        <div><strong>Giá trị:</strong> {detailPromotion.GiaTri}</div>
-                        <div><strong>Ngày bắt đầu:</strong> {moment(detailPromotion.NgayBatDau).format("DD/MM/YYYY")}</div>
-                        <div><strong>Ngày kết thúc:</strong> {moment(detailPromotion.NgayKetThuc).format("DD/MM/YYYY")}</div>
-                    </div>
-                )}
+                <div>
+                    <h3>Tên khuyến mãi: {detailPromotion?.TenKhuyenMai}</h3>
+                    <p>Mô tả: {detailPromotion?.MoTaKhuyenMai}</p>
+                    <p>Loại khuyến mãi: {detailPromotion?.LoaiKhuyenMai}</p>
+                    <p>Giá trị: {detailPromotion?.GiaTri}</p>
+                    <p>Ngày bắt đầu: {detailPromotion?.NgayBatDau}</p>
+                    <p>Ngày kết thúc: {detailPromotion?.NgayKetThuc}</p>
+                </div>
             </Modal>
         </div>
     );
