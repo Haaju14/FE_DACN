@@ -43,7 +43,7 @@ const BlockList: React.FC = () => {
 
   return (
     <div className="manage-blocklist-container">
-      <h1>Danh sách người dùng bị chặn</h1>
+      <h1>Danh sách người dùng bị chặn aaaaaa</h1>
       <div className="blocklist-grid">
         {blockedUsers.length === 0 ? (
           <p>Không có người dùng bị chặn nào.</p>
