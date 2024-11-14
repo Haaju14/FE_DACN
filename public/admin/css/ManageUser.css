@@ -189,3 +189,16 @@ button:hover {
 .user-card-container .user-card {
     width: 100%; /* Đảm bảo card chiếm toàn bộ chiều rộng trong grid */
 }
+
+.user-actions .btn-danger {
+    margin-left: auto;  /* Đẩy nút Chặn sang bên phải */
+    background-color: red;  /* Màu nền mặc định của nút Chặn */
+    color: white;
+    border-color: red;  /* Màu viền mặc định của nút */
+}
+
+.user-actions .btn-danger:hover {
+    background-color: darkred;  /* Màu nền khi hover */
+    border-color: darkred;  /* Màu viền khi hover */
+    color: white;  /* Màu chữ khi hover */
+}

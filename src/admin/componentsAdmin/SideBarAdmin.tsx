@@ -25,7 +25,12 @@ const SideBar: React.FC = () => {
                 <p>Manage BlackList</p>
               </NavLink>
             </li>
-
+            <li className="nav-item">
+              <NavLink to="/admin/Manage-Block-List" className="nav-link">
+                <i className="fa fa-user-lock"></i>
+                <p>Manage BlockList</p>
+              </NavLink>
+            </li>
             <li className="nav-item">
               <NavLink to="/admin/Manage-Comment" className="nav-link">
                 <i className="fas fa-comment" />
@@ -53,12 +58,9 @@ const SideBar: React.FC = () => {
                 <p>Manage Promotion</p>
               </NavLink>
             </li>
-
-            
-
           </>
         );
-      } else if (userLogin.user.Role === "giangvien") 
+      } else if (userLogin.user.Role === "giangvien")
         return (
           <>
             <li className="nav-item">
@@ -76,7 +78,6 @@ const SideBar: React.FC = () => {
             </li>
           </>
         );
-       
     }
     return null; // Không hiển thị menu nếu không có thông tin người dùng
   };
@@ -101,9 +102,7 @@ const SideBar: React.FC = () => {
 
       <div className="sidebar-wrapper scrollbar scrollbar-inner">
         <div className="sidebar-content">
-          <ul className="nav nav-secondary">
-            {renderMenuForRole()}
-          </ul>
+          <ul className="nav nav-secondary">{renderMenuForRole()}</ul>
         </div>
       </div>
     </div>
