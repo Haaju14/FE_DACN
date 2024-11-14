@@ -392,13 +392,7 @@ const ManageUsers: React.FC = () => {
           >
             <Input />
           </Form.Item>
-          <Form.Item
-            label="Mật khẩu"
-            name="MatKhau"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
-          >
-            <Input.Password />
-          </Form.Item>
+          
           <Form.Item
             label="Email"
             name="Email"
