@@ -1,137 +1,118 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import io from 'socket.io-client';
-import { BASE_URL } from '../../../util/fetchfromAPI';
-import '../../../../public/user/css/ChatBox.css';
-
-const socket = io("http://localhost:4000");
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { BASE_URL } from "../../../util/fetchfromAPI";
+import "../../../../public/user/css/ChatBox.css";
 
 const ChatApp: React.FC = () => {
-  const [users, setUsers] = useState<any[]>([]); // Danh sách người dùng
-  const [selectedUser, setSelectedUser] = useState<any | null>(null); // Người dùng được chọn
-  const [messages, setMessages] = useState<any[]>([]); // Tin nhắn
-  const [currentMessage, setCurrentMessage] = useState<string>(""); // Tin nhắn hiện tại
-  const [loading, setLoading] = useState<boolean>(false); // Trạng thái tải
-  const [sidebarVisible, setSidebarVisible] = useState<boolean>(false); // Trạng thái hiển thị sidebar
+  const [users, setUsers] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [currentMessage, setCurrentMessage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [sidebarVisible, setSidebarVisible] = useState<boolean>(false);
 
   const getToken = () => localStorage.getItem("token");
-  const getRole = () => localStorage.getItem('role');
 
-  // Lấy danh sách người dùng theo vai trò
+  const getRole = () => {
+    const userLogin = localStorage.getItem("userLogin");
+    if (userLogin) {
+      try {
+        const userData = JSON.parse(userLogin);
+        return userData.user.Role;
+      } catch (error) {
+        console.error("Lỗi khi phân tích JSON từ localStorage:", error);
+        return null;
+      }
+    }
+    return null;
+  };
+
   const fetchUsers = async () => {
     try {
-      const token = getToken();  
-      const role = getRole();   
-  
+      const token = getToken();
+      console.log("token: ", token);
+
+      const role = getRole();
+      console.log("role: ", role);
+
       if (!token) {
-        console.error('Token không tồn tại');
-        alert("Vui lòng đăng nhập trước.");
-        return; // Ngừng thực hiện nếu không có token
+        console.error("Token không tồn tại");
+        return;
       }
-  
+
       if (!role) {
-        console.error('Role không tồn tại');
-        alert("Vui lòng kiểm tra quyền hạn của bạn.");
-        return; // Ngừng thực hiện nếu không có role
+        console.error("Role không tồn tại");
+        return;
       }
-  
-      // Kiểm tra role hợp lệ
-      if (!['admin', 'giangvien', 'hocvien'].includes(role)) {
-        console.error('Role không hợp lệ');
-        alert("Quyền truy cập không hợp lệ.");
-        return; // Ngừng thực hiện nếu role không hợp lệ
+
+      if (!["admin", "giangvien", "hocvien"].includes(role)) {
+        console.error("Role không hợp lệ");
+        return;
       }
-  
-      
-      if (role === 'admin') {
-        // Admin gọi danh sách giảng viên và học viên
+
+      let allUsers: any[] = [];
+
+      if (role === "admin") {
         const responseGiangVien = await axios.get(`${BASE_URL}/giangvien/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
+
         const responseHocVien = await axios.get(`${BASE_URL}/hocvien`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
-        const allUsers = [
-          ...responseGiangVien.data,
-          ...responseHocVien.data,
-        ];
-        setUsers(allUsers); // Cập nhật danh sách người dùng
-        return;
-  
-      } else if (role === 'giangvien') {
-        // Giảng viên gọi danh sách admin và học viên
+
+        const giangVienData = Array.isArray(responseGiangVien.data.content)
+          ? responseGiangVien.data.content
+          : [];
+        const hocVienData = Array.isArray(responseHocVien.data.content)
+          ? responseHocVien.data.content
+          : [];
+
+        allUsers = [...giangVienData, ...hocVienData];
+      } else if (role === "giangvien") {
         const responseAdmin = await axios.get(`${BASE_URL}/admin`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
+
         const responseHocVien = await axios.get(`${BASE_URL}/hocvien`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
-        const allUsers = [
-          ...responseAdmin.data,
-          ...responseHocVien.data,
-        ];
-        setUsers(allUsers); // Cập nhật danh sách người dùng
-        return;
-        
-      } else if (role === 'hocvien') {
-        // Học viên chỉ lấy danh sách giảng viên
+
+        const adminData = Array.isArray(responseAdmin.data.content)
+          ? responseAdmin.data.content
+          : [];
+        const hocVienData = Array.isArray(responseHocVien.data.content)
+          ? responseHocVien.data.content
+          : [];
+
+        allUsers = [...adminData, ...hocVienData];
+      } else if (role === "hocvien") {
         const responseGiangVien = await axios.get(`${BASE_URL}/giangvien/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
-        setUsers(responseGiangVien.data); // Cập nhật danh sách giảng viên
-        return;
+
+        const giangVienData = Array.isArray(responseGiangVien.data.content)
+          ? responseGiangVien.data.content
+          : [];
+        allUsers = giangVienData;
       }
+
+      setUsers(allUsers);
     } catch (error) {
-      console.error('Lỗi khi lấy danh sách người dùng:', error);
-      alert("Đã xảy ra lỗi khi tải dữ liệu người dùng.");
+      console.error("Lỗi khi lấy danh sách người dùng:", error);
     }
   };
-  
 
   useEffect(() => {
-    fetchUsers(); // Gọi hàm lấy danh sách người dùng theo vai trò
+    fetchUsers();
   }, []);
-
-  useEffect(() => {
-    socket.on('receive_message', (data) => {
-      setMessages(prevMessages => [...prevMessages, data]);
-    });
-
-    return () => {
-      socket.off('receive_message');
-    };
-  }, []);
-
-  useEffect(() => {
-    const userId = 1;
-    socket.emit('register', userId);
-  }, []);
-
-  const handleSendMessage = () => {
-    if (currentMessage.trim() && selectedUser) {
-      const message = { sender: "teacher", receiverId: selectedUser.IDNguoiDung, text: currentMessage };
-      socket.emit('send_message', message);
-      setMessages(prevMessages => [...prevMessages, message]);
-      setCurrentMessage("");
-    }
-  };
 
   return (
     <div className="chat-app">
-      {/* Nút mở sidebar */}
-      <button
-        className="chat-icon"
-        onClick={() => setSidebarVisible(true)}
-      >
+      <button className="chat-icon" onClick={() => setSidebarVisible(true)}>
         <i className="gg-chat" />
       </button>
 
-      {/* Sidebar */}
       {sidebarVisible && (
         <div className="sidebar show">
           <button
@@ -172,19 +153,25 @@ const ChatApp: React.FC = () => {
         </div>
       )}
 
-      {/* Khung chat */}
       {selectedUser && (
         <div className="chat-window">
           <div className="chat-header">
             <h3>Chat với {selectedUser.HoTen}</h3>
-            <button onClick={() => setSelectedUser(null)} className="close-chat">×</button>
+            <button
+              onClick={() => setSelectedUser(null)}
+              className="close-chat"
+            >
+              ×
+            </button>
           </div>
 
           <div className="messages">
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={msg.sender === "teacher" ? "teacher-message" : "user-message"}
+                className={
+                  msg.sender === "teacher" ? "teacher-message" : "user-message"
+                }
               >
                 <span>{msg.text}</span>
               </div>
@@ -198,7 +185,6 @@ const ChatApp: React.FC = () => {
               onChange={(e) => setCurrentMessage(e.target.value)}
               placeholder="Nhập tin nhắn..."
             />
-            <button onClick={handleSendMessage} className="send-button">➤</button>
           </div>
         </div>
       )}
