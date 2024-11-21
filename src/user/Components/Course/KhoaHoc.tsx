@@ -21,6 +21,7 @@ interface KhoaHocData {
     LoaiKhoaHoc: string;
     IDDanhMuc: string;
     XepLoai: string;
+    HashTagName: string;
 }
 
 const KhoaHocComponent: React.FC = () => {
@@ -227,6 +228,9 @@ const KhoaHocComponent: React.FC = () => {
                                             />
                                             <h3>{KhoaHoc.TenKhoaHoc}</h3>
                                             <p>{KhoaHoc.MoTaKhoaHoc}</p>
+                                            <p>
+                                                <strong></strong>{KhoaHoc.HashTagName}
+                                            </p>
                                             <p>
                                                 <strong>Giá:</strong> {KhoaHoc.GiaTien} VND
                                             </p>

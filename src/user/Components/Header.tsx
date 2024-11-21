@@ -59,12 +59,7 @@ const Header: React.FC = () => {
                   Service
                 </a>
               </li>
-              <li className="nav-item">
-                <NavLink to="/khoa-hoc" className="nav-link">
-                  Courses
-                </NavLink>
-              </li>
-
+              
               {userRole === 'hocvien' && (
                 <>
                 <li className="nav-item">

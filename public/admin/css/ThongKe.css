@@ -1,0 +1,115 @@
+/* Cấu trúc chung của trang thống kê thu nhập */
+.manage-followers-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.error-message {
+  color: #ff4d4f;
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.no-data-message {
+  color: #aaa;
+  text-align: center;
+  font-size: 18px;
+  font-style: italic;
+  margin-top: 40px;
+}
+
+/* Bảng thống kê thu nhập */
+.income-table {
+  margin-top: 20px;
+}
+
+.income-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.income-table th,
+.income-table td {
+  padding: 15px;
+  border: 1px solid #ddd;
+}
+
+.income-table th {
+  background-color: #007bff;
+  color: #fff;
+  font-size: 18px;
+}
+
+.income-table td {
+  background-color: #fff;
+  font-size: 16px;
+}
+
+.income-table tr:nth-child(even) td {
+  background-color: #f2f2f2;
+}
+
+/* Căn chỉnh tên khóa học sang bên trái */
+.income-table .ten-khoa-hoc {
+  text-align: left;
+}
+
+/* Căn chỉnh các ô còn lại (tổng thu nhập) sang bên phải */
+.income-table .tong-thu-nhap {
+  text-align: right;
+}
+
+/* Hiệu ứng hover khi di chuột vào dòng */
+.income-table tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+/* Định dạng cho phần Loading */
+.ant-spin {
+  display: block;
+  margin: 40px auto;
+}
+
+.ant-spin-text {
+  font-size: 18px;
+  color: #007bff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .manage-followers-container {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+
+  .income-table th,
+  .income-table td {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .income-table {
+    margin-top: 15px;
+  }
+}

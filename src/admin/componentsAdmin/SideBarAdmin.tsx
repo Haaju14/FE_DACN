@@ -66,6 +66,20 @@ const SideBar: React.FC = () => {
               </NavLink>
             </li>
 
+            <li className="nav-item">
+              <NavLink to="/admin/Manage-HashTag" className="nav-link">
+                <i className="fas fa-cogs" />
+                <p>Manage HashTag</p>
+              </NavLink>
+            </li>
+
+            <li className="nav-item">
+              <NavLink to="/admin/Revenue-statistics" className="nav-link">
+                <i className="fas fa-cogs" />
+                <p>Revenue statistics</p>
+              </NavLink>
+            </li>
+
           </>
         );
       } else if (userLogin.user.Role === "giangvien")

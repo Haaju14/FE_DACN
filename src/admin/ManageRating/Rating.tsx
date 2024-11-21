@@ -4,7 +4,7 @@ import axios from "axios";
 import { BASE_URL } from "../../util/fetchfromAPI";
 import "../../../public/admin/css/ManageComment.css";
 
-const ManageComment: React.FC = () => {
+const ManageRating: React.FC = () => {
   const [comments, setComments] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedComment, setSelectedComment] = useState<any | null>(null);
@@ -150,8 +150,8 @@ const ManageComment: React.FC = () => {
             </p>
 
             <p>
-              <strong>Tên người dùng:</strong>{" "}
-              {selectedComment.HoTen}
+              <strong>ID người dùng:</strong>{" "}
+              {selectedComment.IDNguoiDung}
             </p>
       
             <p>
@@ -174,4 +174,4 @@ const ManageComment: React.FC = () => {
   );
 };
 
-export default ManageComment;
+export default ManageRating;

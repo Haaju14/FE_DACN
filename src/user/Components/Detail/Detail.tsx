@@ -6,8 +6,8 @@ import { RootState } from '../../../redux/store';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { BASE_URL } from '../../../util/fetchfromAPI';
 import Loading from '../Antd/Loading';
-import React, { useState } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import '../../../../public/user/css/Detail.css'
 interface KhoaHocData {
     IDKhoaHoc: number;
     IDDanhMuc: number;
@@ -50,6 +50,7 @@ const Detail: React.FC = () => {
     const [comment, setComment] = useState<string>('');
     const [feedbackContent, setFeedbackContent] = useState<string>('');
     const [replyContent, setReplyContent] = useState<{ [key: number]: string }>({});
+    const [comments, setComments] = useState<BinhLuanData[]>([]);
 
     if (!token) {
         return <div>Please log in to view course details.</div>;
@@ -64,50 +65,21 @@ const Detail: React.FC = () => {
             const response = await axios.get(`${BASE_URL}/khoa-hoc/xem-chi-tiet/${IDKhoaHoc}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            return response.data;
+            return response.data.content;
         } catch (error: any) {
             console.error('Error:', error);
             throw new Error(error.response ? error.response.data.message : error.message);
         }
     };
 
-    const fakeComments: BinhLuanData[] = [
-        {
-            IDBinhLuan: 1,
-            IDKhoaHoc: Number(IDKhoaHoc),
-            NoiDung: "Đây là một bình luận giả để kiểm tra tính năng.",
-            IDNguoiDung: "User123",
-            ThoiGian: new Date().toISOString(),
-            TenNguoiDung: "Nguyễn Văn A",
-            replies: [
-                {
-                    IDBinhLuan: 3,
-                    IDKhoaHoc: Number(IDKhoaHoc),
-                    NoiDung: "Đây là phần trả lời cho bình luận trên.",
-                    IDNguoiDung: "User456",
-                    ThoiGian: new Date().toISOString(),
-                    TenNguoiDung: "Trần Thị B",
-                },
-            ],
-        },
-        {
-            IDBinhLuan: 2,
-            IDKhoaHoc: Number(IDKhoaHoc),
-            NoiDung: "Cảm ơn thông tin về khóa học!",
-            IDNguoiDung: "User456",
-            ThoiGian: new Date().toISOString(),
-            TenNguoiDung: "Trần Thị B",
-        },
-    ];
-
-    const getUserInfoAPI = async (IDNguoiDung: string, token: string) => {
+    const getCommentsAPI = async (IDKhoaHoc: string, token: string) => {
         try {
-            const response = await axios.get(`${BASE_URL}/user/profile/${IDNguoiDung}`, {
+            const response = await axios.get(`${BASE_URL}/binh-luan/get/${IDKhoaHoc}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            return response.data;
+            setComments(response.data.content || []);
         } catch (error: any) {
-            console.error('Error fetching user info:', error);
+            console.error('Error:', error);
             throw new Error(error.response ? error.response.data.message : error.message);
         }
     };
@@ -119,7 +91,11 @@ const Detail: React.FC = () => {
         refetchOnWindowFocus: true,
     });
 
-    const comments = fakeComments;
+    useEffect(() => {
+        if (IDKhoaHoc && token) {
+            getCommentsAPI(IDKhoaHoc, token);
+        }
+    }, [IDKhoaHoc, token]);
 
     if (queryResultKhoaHocByID.isLoading) {
         return <Loading />;
@@ -160,7 +136,7 @@ const Detail: React.FC = () => {
                 NoiDung: comment,
                 IDNguoiDung: userLogin.user.IDNguoiDung.toString(),
                 ThoiGian: new Date().toISOString(),
-                TenNguoiDung: ''
+                TenNguoiDung: userLogin.user.HoTen || '',
             };
 
             await axios.post(`${BASE_URL}/binh-luan/post/${IDKhoaHoc}`, commentData, {
@@ -169,6 +145,7 @@ const Detail: React.FC = () => {
 
             message.success('Bình luận thành công!');
             setComment('');
+            getCommentsAPI(IDKhoaHoc, token); 
         } catch (error: any) {
             console.error('Error submitting comment:', error.response || error);
             message.error('Đã xảy ra lỗi trong quá trình gửi bình luận.');
@@ -192,7 +169,7 @@ const Detail: React.FC = () => {
             NoiDung: replyText,
             IDNguoiDung: userLogin.user.IDNguoiDung.toString(),
             ThoiGian: new Date().toISOString(),
-            TenNguoiDung: userLogin.user.HoTen,
+            TenNguoiDung: userLogin.user.HoTen || '',
         };
 
         try {
@@ -202,6 +179,7 @@ const Detail: React.FC = () => {
 
             message.success("Trả lời thành công!");
             setReplyContent((prev) => ({ ...prev, [parentCommentId]: '' }));
+            getCommentsAPI(IDKhoaHoc, token); 
         } catch (error: any) {
             console.error("Error submitting reply:", error.response || error);
             message.error("Đã xảy ra lỗi trong quá trình gửi trả lời.");
@@ -235,7 +213,6 @@ const Detail: React.FC = () => {
             message.error('Đã xảy ra lỗi trong quá trình gửi đánh giá.');
         }
     };
-    
 
     return (
         <section className="ftco-section">
@@ -256,69 +233,60 @@ const Detail: React.FC = () => {
                                 <ul className="list-unstyled">
                                     {[ 
                                         { title: "Mô tả khóa học", value: KhoaHocData.MoTaKhoaHoc || "Chưa có mô tả" },
-                                        { title: "Loại Khóa Học", value: KhoaHocData.LoaiKhoaHoc || "Chưa có loại" },
-                                        { title: "Số lượng học viên", value: KhoaHocData.SoLuongHocVien || "Chưa có thông tin" },
+                                        { title: "Số học viên", value: KhoaHocData.SoLuongHocVien || "0" },
+                                        { title: "Giá khóa học", value: `${KhoaHocData.GiaTien} VND` },
+                                        { title: "Giảm giá", value: `${KhoaHocData.GiamGia}%` },
                                     ].map((item, index) => (
-                                        <li key={index} className="d-flex justify-content-between">
-                                            <span>{item.title}:</span>
+                                        <li key={index} className="d-flex justify-content-between align-items-center py-2">
+                                            <span>{item.title}</span>
                                             <span>{item.value}</span>
                                         </li>
                                     ))}
                                 </ul>
+                                <button onClick={handleRegisterCourse} className="btn btn-primary btn-lg">
+                                    Đăng ký khóa học
+                                </button>
                             </div>
-                            <button className="btn btn-primary" onClick={handleRegisterCourse}>
-                                Đăng ký khóa học
-                            </button>
                         </div>
-    
-                        {/* Feedback Section */}
-                        <div className="feedback-section mt-5">
-                            <h4>Gửi nhận xét</h4>
-                            <textarea 
-                                value={feedbackContent}
-                                onChange={(e) => setFeedbackContent(e.target.value)}
-                                placeholder="Nội dung nhận xét"
-                                className="form-control mb-3"
-                            />
-                            <div>
-                                <span>Đánh giá: </span>
-                                <select value={rating || ''} onChange={(e) => setRating(e.target.value)} className="form-select mb-3">
-                                    <option value="">Chọn đánh giá</option>
-                                    <option value="Tích cực">Tích cực</option>
-                                    <option value="Tiêu cực">Tiêu cực</option>
-                                </select>
-                            </div>
-                            <button className="btn btn-success" onClick={handleSubmitFeedback}>
-                                Gửi nhận xét
-                            </button>
-                        </div>
-    
-                        {/* Comments Section */}
+
+                        {/* Bình luận và Đánh giá */}
                         <div className="comments-section mt-5">
-                            <h4>Bình luận</h4>
-                            <div className="comments-list">
-                                {comments.length > 0 ? (
+                            <h4 className="mb-4">Bình luận</h4>
+                            <textarea
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                className="form-control mb-3"
+                                rows={3}
+                                placeholder="Nhập bình luận..."
+                            />
+                            <button onClick={handleSubmitComment} className="btn btn-primary">
+                                Gửi bình luận
+                            </button>
+
+                            <div className="replies mt-5">
+                                {comments.length ? (
                                     comments.map((comment) => (
-                                        <div key={comment.IDBinhLuan} className="comment-item">
-                                            <p><strong>{comment.TenNguoiDung}</strong>: {comment.NoiDung}</p>
-                                            <span>{new Date(comment.ThoiGian).toLocaleString()}</span>
-                                            <div className="replies">
+                                        <div key={comment.IDBinhLuan}>
+                                            <p><strong>{comment.TenNguoiDung}:</strong> {comment.NoiDung}</p>
+                                            <div className="replies mt-3">
                                                 {comment.replies && comment.replies.map((reply) => (
-                                                    <div key={reply.IDBinhLuan} className="reply-item" style={{ marginLeft: '20px' }}>
-                                                        <p><strong>{reply.TenNguoiDung}</strong>: {reply.NoiDung}</p>
-                                                        <span>{new Date(reply.ThoiGian).toLocaleString()}</span>
-                                                    </div>
+                                                    <p key={reply.IDBinhLuan} className="ml-4">
+                                                        <strong>{reply.TenNguoiDung}:</strong> {reply.NoiDung}
+                                                    </p>
                                                 ))}
                                             </div>
-                                            {/* Reply Form */}
                                             <textarea
                                                 value={replyContent[comment.IDBinhLuan] || ''}
                                                 onChange={(e) => handleReplyChange(comment.IDBinhLuan, e.target.value)}
-                                                placeholder="Nhập trả lời"
                                                 className="form-control mb-3"
+                                                rows={3}
+                                                placeholder="Nhập trả lời..."
                                             />
-                                            <button className="btn btn-secondary" onClick={() => handleSubmitReply(comment.IDBinhLuan)}>
-                                                Trả lời
+                                            <button
+                                                onClick={() => handleSubmitReply(comment.IDBinhLuan)}
+                                                className="btn btn-secondary"
+                                            >
+                                                Gửi trả lời
                                             </button>
                                         </div>
                                     ))
@@ -326,21 +294,38 @@ const Detail: React.FC = () => {
                                     <p>Chưa có bình luận nào.</p>
                                 )}
                             </div>
-                            <textarea 
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                placeholder="Nội dung bình luận"
+                        </div>
+                    </div>
+                    <div className="col-lg-4">
+                        {/* Đánh giá */}
+                        <div className="feedback-section">
+                            <h4 className="mb-4">Đánh giá khóa học</h4>
+                            <div className="form-group">
+                                <label>Chọn xếp loại:</label>
+                                <select
+                                    className="form-control"
+                                    value={rating || ''}
+                                    onChange={(e) => setRating(e.target.value)}
+                                >
+                                    <option value="">Chọn xếp loại</option>
+                                    <option value="tích cực">Tích cực</option>
+                                    <option value="tiêu cực">Tiêu cực</option>
+                                    
+                                </select>
+                            </div>
+                            <textarea
                                 className="form-control mb-3"
+                                placeholder="Nhập nhận xét"
+                                value={feedbackContent}
+                                onChange={(e) => setFeedbackContent(e.target.value)}
                             />
-                            <button className="btn btn-primary" onClick={handleSubmitComment}>
-                                Gửi bình luận
-                            </button>
+                            <button onClick={handleSubmitFeedback} className="btn btn-primary">Gửi đánh giá</button>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
     );
-    
 };
+
 export default Detail;

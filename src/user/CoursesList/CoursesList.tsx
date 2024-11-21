@@ -140,7 +140,7 @@ const KhoaHocCombinedComponent: React.FC = () => {
     return (
         <section className="ftco-section bg-light">
             <div className="container">
-                <div className="row">
+            <div className="row">
                 <div className="col-lg-3 sidebar">
                         <div className="sidebar-wrap bg-light ftco-animate">
                             <form action="#">

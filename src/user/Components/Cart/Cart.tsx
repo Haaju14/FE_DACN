@@ -23,7 +23,7 @@ const CartPage: React.FC = () => {
   // Lấy giỏ hàng từ backend
   const fetchCartItems = async () => {
     try {
-      const headers = getAuthHeaders(); // Lấy header với token
+      const headers = getAuthHeaders(); 
       const { data } = await axios.get(`${BASE_URL}/don-hang`, { headers }); // Lấy giỏ hàng từ backend
       setCartItems(data); // Giả sử backend trả về giỏ hàng trong data
       setLoading(false);
@@ -111,7 +111,7 @@ const CartPage: React.FC = () => {
 
       <div className="cart-footer">
         <div className="total">
-          Tổng tiền: <span>{calculateTotalPrice().toLocaleString()} đ</span> {/* Cập nhật tổng tiền */}
+          Tổng tiền: <span>{calculateTotalPrice().toLocaleString()} đ</span> 
         </div>
         <Button type="primary" size="large">
           Thanh toán

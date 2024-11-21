@@ -1,0 +1,206 @@
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    color: #444;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+section {
+    padding: 40px 0;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Course Detail Section */
+.course-detail {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.course-detail h2 {
+    font-size: 30px;
+    font-weight: 500;
+    color: #2d3e50;
+    margin-bottom: 20px;
+}
+
+.single-slider .item img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.course-info {
+    margin-top: 20px;
+}
+
+.course-info ul {
+    padding: 0;
+    list-style-type: none;
+}
+
+.course-info li {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f1f1;
+    color: #666;
+}
+
+.course-info li span {
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.course-info .btn-lg {
+    background-color: #006fbb;
+    color: #fff;
+    padding: 14px 30px;
+    font-size: 18px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.course-info .btn-lg:hover {
+    background-color: #005a99;
+}
+
+/* Comments Section */
+.comments-section {
+    background-color: #ffffff;
+    padding: 30px;
+    margin-top: 40px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.comments-section h4 {
+    font-size: 24px;
+    color: #2d3e50;
+    margin-bottom: 20px;
+}
+
+.comments-section .form-control {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 12px;
+    font-size: 16px;
+    color: #444;
+}
+
+.comments-section .form-control:focus {
+    border-color: #006fbb;
+    outline: none;
+}
+
+.comments-section .btn-primary {
+    background-color: #006fbb;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.comments-section .btn-primary:hover {
+    background-color: #005a99;
+}
+
+.replies {
+    margin-top: 20px;
+    padding-left: 30px;
+}
+
+.replies p {
+    font-size: 16px;
+    color: #555;
+    margin: 5px 0;
+}
+
+/* Feedback Section */
+.feedback-section {
+    background-color: #ffffff;
+    padding: 30px;
+    margin-top: 40px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.feedback-section h4 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.feedback-section .form-group {
+    margin-bottom: 20px;
+}
+
+.feedback-section label {
+    font-size: 16px;
+    color: #444;
+}
+
+.feedback-section select.form-control,
+.feedback-section textarea.form-control {
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    color: #444;
+    width: 100%;
+}
+
+.feedback-section select.form-control:focus,
+.feedback-section textarea.form-control:focus {
+    border-color: #006fbb;
+    outline: none;
+}
+
+.feedback-section .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.feedback-section .btn-secondary:hover {
+    background-color: #5a636a;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+    .col-lg-8, .col-lg-4 {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+
+    .single-slider .item img {
+        border-radius: 0;
+    }
+
+    .btn-lg {
+        width: 100%;
+        padding: 14px;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+    }
+}
