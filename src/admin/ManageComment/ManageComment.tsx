@@ -167,4 +167,8 @@ const ManageComment: React.FC = () => {
   );
 };
 
+<<<<<<< HEAD
 export default ManageComment;
+=======
+export default ManageComment;
+>>>>>>> b2850d2d595df478d698983ccbaa2f2aa96bcea6
