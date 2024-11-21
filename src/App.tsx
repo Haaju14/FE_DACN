@@ -28,7 +28,7 @@ import Censor from "./admin/CensorCourse/Censor.tsx";
 import Category from "./admin/ManageCategory/Category.tsx";
 import Promotion from "./admin/ManagePromotion/Promotion.tsx";
 import Rating from "./admin/ManageRating/Rating.tsx";
-// import Chatbox from "./user/Components/ChatBox/ChatBox.tsx";
+import Chatbox from "./user/Components/ChatBox/ChatBox.tsx";
 
 export const routeLink: any = createBrowserHistory();
 
@@ -77,7 +77,7 @@ function App() {
         </Routes>
 
         {/* Chatbox chỉ xuất hiện trong User Routes */}
-        {/* <Chatbox /> */}
+        <Chatbox />
       </HistoryRouter>
     </>
   );
