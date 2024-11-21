@@ -8,24 +8,13 @@ import { ShoppingCartOutlined } from "@ant-design/icons"; // Import icon giỏ h
 
 const Header: React.FC = () => {
   const [activeTab, setActiveTab] = useState("login"); // State để quản lý tab hiện tại
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+
+  // Giả sử userRole là 'hocvien' cho mục đích minh họa
+  const userRole = 'hocvien'; // Hoặc lấy role thực từ state hoặc từ token đã giải mã
 
   const handleForgotPasswordClick = () => {
     setActiveTab("forgot-password"); // Chuyển sang tab quên mật khẩu
-  };
-
-  const handleSearchToggle = () => {
-    setSearchOpen(!searchOpen); // Toggle mở hộp tìm kiếm
-  };
-
-  const handleSearch = () => {
-    if (searchTerm.trim() !== "") {
-      // Xử lý tìm kiếm, ví dụ gửi API hoặc điều hướng
-      console.log(`Tìm kiếm giảng viên với tên: ${searchTerm}`);
-      setSearchTerm(""); // Reset trường tìm kiếm
-    }
   };
 
   const handleCartClick = () => {
@@ -41,7 +30,7 @@ const Header: React.FC = () => {
         <div className="container">
           <NavLink className="navbar-brand" to="/">
             H&H
-          </NavLink>{" "}
+          </NavLink>
           <button
             className="navbar-toggler"
             type="button"
@@ -58,7 +47,7 @@ const Header: React.FC = () => {
               <li className="nav-item">
                 <span className="nav-link">
                   <NavLink to="/">Home</NavLink>
-                </span>{" "}
+                </span>
               </li>
               <li className="nav-item">
                 <a href="#" className="nav-link">
@@ -75,21 +64,31 @@ const Header: React.FC = () => {
                   Courses
                 </NavLink>
               </li>
-              <li className="nav-item">
-                <NavLink to="/Teacher" className="nav-link">
-                  Teacher
-                </NavLink>
-              </li>
-              <li className="nav-item d-flex align-items-center">
-                <ShoppingCartOutlined
-                  onClick={handleCartClick}
-                  style={{ fontSize: "24px", color: "white", cursor: "pointer" }}
-                />
-              </li>
+
+              {userRole === 'hocvien' && (
+                <>
+                <li className="nav-item">
+                  <NavLink to="/khoa-hoc" className="nav-link">
+                    Courses
+                  </NavLink>
+                </li>
+                  <li className="nav-item">
+                    <NavLink to="/Teacher" className="nav-link">
+                      Teacher
+                    </NavLink>
+                  </li>
+                  <li className="nav-item d-flex align-items-center">
+                    <ShoppingCartOutlined
+                      onClick={handleCartClick}
+                      style={{ fontSize: "24px", color: "white", cursor: "pointer" }}
+                    />
+                  </li>
+                </>
+              )}
+
               <li className="nav-item d-flex align-items-center">
                 <UserMenu />
               </li>
-              
             </ul>
           </div>
         </div>

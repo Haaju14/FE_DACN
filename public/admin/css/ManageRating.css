@@ -1,0 +1,143 @@
+/* Định dạng cho container chứa danh sách bình luận */
+.manage-comments-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+  }
+  
+  /* Tiêu đề */
+  .manage-comments-container h1 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Định dạng cho Grid chứa các thẻ Card */
+  .comment-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 cột */
+    gap: 20px;
+    width: 100%; /* Đảm bảo grid chiếm toàn bộ chiều rộng */
+    box-sizing: border-box; /* Đảm bảo padding không ảnh hưởng */
+  }
+  
+  /* Định dạng thẻ Card */
+  .comment-card {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .comment-card:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Định dạng các thông tin bên trong Card */
+  .comment-info {
+    margin-bottom: 10px;
+  }
+  
+  .comment-info i {
+    margin-right: 10px;
+    color: #007bff; /* Màu xanh cho icon */
+  }
+  
+  .comment-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: start; /* Căn các phần tử bắt đầu từ trên cùng */
+    margin-bottom: 8px;
+  }
+  
+  .comment-info {
+    display: flex;
+    align-items: center; /* Căn biểu tượng và văn bản trong cùng một dòng */
+  }
+  
+  /* Nút Xem chi tiết */
+  .comment-actions .ant-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .comment-actions .ant-btn-primary:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Nút Xóa */
+.comment-actions .ant-btn-danger {
+    display: inline-flex;
+    align-items: center;
+    background-color: #dc3545 !important; /* Nền đỏ */
+    color: white !important; /* Màu icon trắng */
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .comment-actions .ant-btn-danger i {
+    color: white !important; /* Đảm bảo icon màu trắng */
+    transition: color 0.3s ease;
+  }
+  
+  /* Khi hover, nền sẽ chuyển thành trắng và icon thành đỏ */
+  .comment-actions .ant-btn-danger:hover {
+    background-color: white !important; /* Nền màu trắng */
+    border: 1px solid #dc3545 !important; /* Thêm viền đỏ để tạo hiệu ứng nổi bật */
+  }
+  
+  .comment-actions .ant-btn-danger:hover i {
+    color: #dc3545 !important; /* Icon chuyển thành màu đỏ khi hover */
+  }
+  
+  
+  
+  
+  /* Modal chi tiết bình luận */
+  .ant-modal {
+    width: 80%;
+  }
+  
+  .ant-modal-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .ant-modal-body {
+    font-size: 16px;
+    color: #666;
+  }
+  
+  .ant-btn {
+    border-radius: 5px;
+    padding: 8px 12px;
+  }
+  
+  /* Đảm bảo hiển thị tốt trên màn hình nhỏ */
+  @media (max-width: 768px) {
+    .comment-grid {
+      grid-template-columns: 1fr; /* 1 cột trên màn hình nhỏ */
+    }
+  }
+  
+  .comment-actions {
+    display: flex;
+    gap: 10px; /* Khoảng cách giữa các nút */
+    justify-content: flex-start; /* Căn trái các nút */
+    align-items: center; /* Căn chỉnh các nút theo chiều dọc */
+  }
+  
+  .comment-actions div {
+    display: inline-block;
+  }

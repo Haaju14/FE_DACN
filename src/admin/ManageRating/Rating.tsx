@@ -17,7 +17,7 @@ const ManageComment: React.FC = () => {
       setLoading(true);
       try {
         const token = getToken();
-        const response = await axios.get(`${BASE_URL}/binh-luan`, {
+        const response = await axios.get(`${BASE_URL}/nhan-xet/all`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -25,7 +25,7 @@ const ManageComment: React.FC = () => {
         setComments(response.data.content);
       } catch (error) {
         console.error("Error fetching comments:", error);
-        message.error("Có lỗi xảy ra khi tải danh sách bình luận.");
+        message.error("Có lỗi xảy ra khi tải danh sách nhận xét.");
       } finally {
         setLoading(false);
       }
@@ -37,7 +37,7 @@ const ManageComment: React.FC = () => {
   const handleViewDetails = async (id: number) => {
     try {
       const token = getToken();
-      const response = await axios.get(`${BASE_URL}/binh-luan/${id}`, {
+      const response = await axios.get(`${BASE_URL}/nhan-xet/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -46,14 +46,14 @@ const ManageComment: React.FC = () => {
       setIsModalVisible(true);
     } catch (error) {
       console.error("Error fetching comment details:", error);
-      message.error("Có lỗi xảy ra khi tải chi tiết bình luận.");
+      message.error("Có lỗi xảy ra khi tải chi tiết nhận xét.");
     }
   };
 
   const handleDeleteComment = async (id: number) => {
     try {
       const token = getToken();
-      await axios.delete(`${BASE_URL}/binh-luan/delete/${id}`, {
+      await axios.delete(`${BASE_URL}/nhan-xet/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -74,38 +74,41 @@ const ManageComment: React.FC = () => {
   };
 
   if (loading) {
-    return <Spin tip="Đang tải danh sách bình luận..." />;
+    return <Spin tip="Đang tải danh sách nhận xét..." />;
   }
 
   return (
     <div className="manage-comments-container">
-      <h1>Danh sách bình luận</h1>
+      <h1>Danh sách nhận xét</h1>
       <div className="comment-grid">
         {comments.length === 0 ? (
-          <p>Không có bình luận nào.</p>
+          <p>Không có nhận xétn nào.</p>
         ) : (
           comments.map((comment) => (
             <Card key={comment.id} className="comment-card">
               <div className="comment-info">
-                <span className="info-label">ID bình luận:</span>{" "}
-                {comment.IDBinhLuan}
+                <span className="info-label">ID nhận xét:</span>{" "}
+                {comment.IDNhanXet}
               </div>
-              <div className="comment-info">
-                <span className="info-label">ID Khóa học đã bình luận:</span>{" "}
-                {comment.IDKhoaHoc}
-              </div>
-              <div className="comment-info">
-                <span className="info-label">Ngày bình luận:</span>{" "}
-                {comment.ThoiGian}
-              </div>
+
               <div className="comment-info">
                 <span className="info-label">Nội dung:</span> {comment.NoiDung}
               </div>
+
+              <div className="comment-info">
+                <span className="info-label">Xếp loại:</span> {comment.XepLoai}
+              </div>
+
+              <div className="comment-info">
+                <span className="info-label">Ngày nhận xét:</span>{" "}
+                {comment.ThoiGian}
+              </div>
+
               <div className="comment-actions">
                 <div>
                   <Button
                     type="primary"
-                    onClick={() => handleViewDetails(comment.IDBinhLuan)}
+                    onClick={() => handleViewDetails(comment.IDNhanXet)}
                   >
                     <i className="fa fa-eye"></i>
                   </Button>
@@ -113,7 +116,7 @@ const ManageComment: React.FC = () => {
                 <div>
                   <Button
                     className="ant-btn ant-btn-danger"
-                    onClick={() => handleDeleteComment(comment.IDBinhLuan)}
+                    onClick={() => handleDeleteComment(comment.IDNhanXet)}
                   >
                     <i className="fa fa-trash"></i>
                   </Button>
@@ -138,29 +141,33 @@ const ManageComment: React.FC = () => {
         {selectedComment ? (
           <div>
             <p>
-              <strong>ID Bình Luận:</strong> {selectedComment.IDBinhLuan}
+              <strong>ID Nhận xét:</strong> {selectedComment.IDNhanXet}
             </p>
+
             <p>
-              <strong>Họ tên người bình luận:</strong>{" "}
-              {selectedComment.IDNguoiDung_NguoiDung.HoTen}
+              <strong>ID Khóa học:</strong>{" "}
+              {selectedComment.IDKhoaHoc}
             </p>
+
             <p>
-              <strong>Email:</strong>{" "}
-              {selectedComment.IDNguoiDung_NguoiDung.Email}
+              <strong>Tên người dùng:</strong>{" "}
+              {selectedComment.HoTen}
             </p>
-            <p>
-              <strong>Tên khóa học bình luận:</strong>{" "}
-              {selectedComment.IDKhoaHoc_KhoaHoc.TenKhoaHoc}
-            </p>
+      
             <p>
               <strong>Nội Dung:</strong> {selectedComment.NoiDung}
             </p>
+
+            <p>
+              <strong>Xếp loại:</strong> {selectedComment.XepLoai}
+            </p>
+
             <p>
               <strong>Thời Gian:</strong> {selectedComment.ThoiGian}
             </p>
           </div>
         ) : (
-          <Spin tip="Đang tải chi tiết bình luận..." />
+          <Spin tip="Đang tải chi tiết nhận xét..." />
         )}
       </Modal>
     </div>

@@ -58,6 +58,14 @@ const SideBar: React.FC = () => {
                 <p>Manage Promotion</p>
               </NavLink>
             </li>
+
+            <li className="nav-item">
+              <NavLink to="/admin/Manage-Rating" className="nav-link">
+                <i className="fas fa-cogs" />
+                <p>Manage Rating</p>
+              </NavLink>
+            </li>
+
           </>
         );
       } else if (userLogin.user.Role === "giangvien")
@@ -76,12 +84,7 @@ const SideBar: React.FC = () => {
                 <p>Manage Followers</p>
               </NavLink>
             </li>
-            <li className="nav-item">
-              <NavLink to="/admin/Manage-Followers" className="nav-link">
-                <i className="fas fa-comments" />
-                <p>Manage Followers</p>
-              </NavLink>
-            </li>
+            
           </>
         );
     }

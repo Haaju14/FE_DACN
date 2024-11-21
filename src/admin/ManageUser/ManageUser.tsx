@@ -42,7 +42,7 @@ const ManageUsers: React.FC = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [currentPage, roleFilter, users, searchName]);
+  }, [currentPage, roleFilter,   searchName]);
 
   const fetchUsers = async () => {
     try {
@@ -277,7 +277,7 @@ const ManageUsers: React.FC = () => {
 
   return (
     <div className="manage-users-container">
-      <h1>Quản lý người dùngzzzz</h1>
+      <h1>Quản lý người dùng</h1>
       <div className="filter-search-container">
         {/* Phần lọc vai trò người dùng */}
         <div className="filter-role-container">
@@ -406,6 +406,9 @@ const ManageUsers: React.FC = () => {
             rules={[{ required: true, message: "Vui lòng nhập họ tên!" }]}
           >
             <Input />
+          </Form.Item>
+          <Form.Item label="Mật khẩu" name="MatKhau" rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}>
+              <Input.Password />
           </Form.Item>
           <Form.Item
             label="Giới tính"
