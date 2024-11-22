@@ -74,6 +74,13 @@ const SideBar: React.FC = () => {
             </li>
 
             <li className="nav-item">
+              <NavLink to="/admin/Manage-Payment" className="nav-link">
+                <i className="fas fa-cogs" />
+                <p>Manage Payment</p>
+              </NavLink>
+            </li>
+
+            <li className="nav-item">
               <NavLink to="/admin/Revenue-statistics" className="nav-link">
                 <i className="fas fa-cogs" />
                 <p>Revenue statistics</p>

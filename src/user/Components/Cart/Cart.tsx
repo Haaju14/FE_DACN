@@ -1,31 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { Checkbox, Button } from "antd";
+import { Modal, Input, Select, Button } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
-import "../../../../public/user/css/Cart.css"; // Import file CSS để style
+import "../../../../public/user/css/Cart.css";
 import { BASE_URL } from "../../../util/fetchfromAPI";
 
+const { Option } = Select;
+
 const CartPage: React.FC = () => {
-  const [cartItems, setCartItems] = useState<any[]>([]); // Dữ liệu giỏ hàng
-  const [loading, setLoading] = useState<boolean>(true); // Trạng thái loading
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isPaymentModalVisible, setPaymentModalVisible] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentNote, setPaymentNote] = useState("");
 
-  // Lấy token từ localStorage
-  const getAuthToken = () => {
-    return localStorage.getItem("token"); // Lấy token từ localStorage
-  };
-
-  // Cấu hình header với token
+  const getAuthToken = () => localStorage.getItem("token");
   const getAuthHeaders = () => {
     const token = getAuthToken();
-    return token ? { Authorization: `Bearer ${token}` } : {}; // Thêm Authorization header nếu có token
+    return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
-  // Lấy giỏ hàng từ backend
   const fetchCartItems = async () => {
     try {
-      const headers = getAuthHeaders(); 
-      const { data } = await axios.get(`${BASE_URL}/don-hang`, { headers }); // Lấy giỏ hàng từ backend
-      setCartItems(data); // Giả sử backend trả về giỏ hàng trong data
+      const headers = getAuthHeaders();
+      const { data } = await axios.get(`${BASE_URL}/don-hang`, { headers });
+      setCartItems(data);
       setLoading(false);
     } catch (error) {
       console.error("Lỗi khi lấy giỏ hàng:", error);
@@ -37,27 +36,49 @@ const CartPage: React.FC = () => {
     fetchCartItems();
   }, []);
 
-  // Tính tổng tiền
-  const calculateTotalPrice = () => {
-    return cartItems.reduce((total, item) => {
-      const price = item.IDKhoaHoc_KhoaHoc && item.IDKhoaHoc_KhoaHoc.GiaTien ? item.IDKhoaHoc_KhoaHoc.GiaTien : 0;
-      return total + price * 1; // Số lượng cố định là 1
+  const calculateTotalPrice = () =>
+    cartItems.reduce((total, item) => {
+      const price = item.IDKhoaHoc_KhoaHoc?.GiaTien || 0;
+      return total + price;
     }, 0);
-  };
 
-  // Xóa sản phẩm khỏi giỏ hàng
   const handleDeleteItem = async (IDDonHang: number) => {
     try {
-      const headers = getAuthHeaders(); // Lấy header với token
-      const response = await axios.delete(`${BASE_URL}/don-hang/delete/${IDDonHang}`, { headers });
+      const headers = getAuthHeaders();
+      await axios.delete(`${BASE_URL}/don-hang/delete/${IDDonHang}`, { headers });
       setCartItems(cartItems.filter((item) => item.IDDonHang !== IDDonHang));
-      console.log("Xóa đơn hàng thành công:", response.data);
     } catch (error) {
       console.error("Lỗi khi xóa đơn hàng:", error);
     }
   };
 
-  // Nếu đang loading, hiển thị loading
+  const showPaymentModal = () => {
+    setPaymentModalVisible(true);
+  };
+
+  const handleCancelPayment = () => {
+    setPaymentModalVisible(false);
+  };
+
+  const handleConfirmPayment = async () => {
+    const headers = getAuthHeaders();
+    const paymentData = {
+      PhuongThucThanhToan: paymentMethod,
+      NoiDungThanhToan: paymentNote || "Thanh toán giỏ hàng",
+    };
+
+    try {
+      const response = await axios.post(`${BASE_URL}/thanh-toan/add`, paymentData, { headers });
+      console.log("Thanh toán thành công:", response.data);
+      setCartItems([]);
+      alert("Thanh toán thành công!");
+      setPaymentModalVisible(false);
+    } catch (error) {
+      console.error("Lỗi khi thanh toán:", error);
+      alert("Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại.");
+    }
+  };
+
   if (loading) {
     return <div>Đang tải giỏ hàng...</div>;
   }
@@ -72,13 +93,11 @@ const CartPage: React.FC = () => {
         <span className="total-price">Số tiền</span>
         <span className="action">Thao tác</span>
       </div>
-
       <div className="cart-items">
         {cartItems.map((item) => (
           <div key={item.IDDonHang} className="cart-item">
             <div className="product-info">
-              {/* Kiểm tra nếu item.IDKhoaHoc_KhoaHoc và item.IDKhoaHoc_KhoaHoc.HinhAnh tồn tại */}
-              {item.IDKhoaHoc_KhoaHoc && item.IDKhoaHoc_KhoaHoc.HinhAnh ? (
+              {item.IDKhoaHoc_KhoaHoc?.HinhAnh ? (
                 <img
                   src={item.IDKhoaHoc_KhoaHoc.HinhAnh}
                   alt={item.IDKhoaHoc_KhoaHoc.TenKhoaHoc}
@@ -87,36 +106,55 @@ const CartPage: React.FC = () => {
               ) : (
                 <span>Hình ảnh không có sẵn</span>
               )}
-              <span>{item.IDKhoaHoc_KhoaHoc ? item.IDKhoaHoc_KhoaHoc.TenKhoaHoc : "Tên khóa học không có"}</span>
+              <span>{item.IDKhoaHoc_KhoaHoc?.TenKhoaHoc || "Tên khóa học không có"}</span>
             </div>
-            <div className="price">
-              {/* Hiển thị đơn giá nếu có */}
-              {item.IDKhoaHoc_KhoaHoc ? item.IDKhoaHoc_KhoaHoc.GiaTien.toLocaleString() : "0 đ"}
-            </div>
-            <div className="quantity">1</div> {/* Số lượng cố định là 1 */}
-            <div className="total-price">
-              {/* Hiển thị tổng tiền nếu có */}
-              {item.TongTien ? item.TongTien.toLocaleString() : "0 đ"}
-            </div>
+            <div className="price">{item.IDKhoaHoc_KhoaHoc?.GiaTien?.toLocaleString() || "0 đ"}</div>
+            <div className="quantity">1</div>
+            <div className="total-price">{item.TongTien?.toLocaleString() || "0 đ"}</div>
             <div className="action">
-              <Button
-                type="text"
-                icon={<DeleteOutlined />}
-                onClick={() => handleDeleteItem(item.IDDonHang)}
-              />
+              <Button type="text" icon={<DeleteOutlined />} onClick={() => handleDeleteItem(item.IDDonHang)} />
             </div>
           </div>
         ))}
       </div>
-
       <div className="cart-footer">
         <div className="total">
-          Tổng tiền: <span>{calculateTotalPrice().toLocaleString()} đ</span> 
+          Tổng tiền: <span>{calculateTotalPrice().toLocaleString()} đ</span>
         </div>
-        <Button type="primary" size="large">
+        <Button type="primary" size="large" onClick={showPaymentModal}>
           Thanh toán
         </Button>
       </div>
+      <Modal
+        title="Thông tin thanh toán"
+        visible={isPaymentModalVisible}
+        onOk={handleConfirmPayment}
+        onCancel={handleCancelPayment}
+        okText="Xác nhận"
+        cancelText="Hủy"
+      >
+        <div>
+          <label>Phương thức thanh toán:</label>
+          <Select
+            value={paymentMethod}
+            onChange={(value) => setPaymentMethod(value)}
+            placeholder="Chọn phương thức thanh toán"
+            style={{ width: "100%", marginTop: "8px", marginBottom: "16px" }}
+          >
+            <Option value="Cash">Thanh toán tiền mặt</Option>
+            <Option value="MOMO">Chuyển khoản MOMO</Option>
+          </Select>
+        </div>
+        <div>
+          <label>Nội dung thanh toán:</label>
+          <Input.TextArea
+            value={paymentNote}
+            onChange={(e) => setPaymentNote(e.target.value)}
+            placeholder="Nhập ghi chú (nếu có)"
+            rows={4}
+          />
+        </div>
+      </Modal>
     </div>
   );
 };

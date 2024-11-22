@@ -31,6 +31,7 @@ import Rating from "./admin/ManageRating/Rating.tsx";
 import ThongKe from "./admin/ThongKeDoanhThu/ThongKe.tsx";
 import Chatbox from "./user/Components/ChatBox/ChatBox.tsx";
 import HashTag from "./admin/ManageHashTag/HashTag.tsx";
+import Payment from "./admin/ManagePayment/Payment.tsx";
 
 export const routeLink: any = createBrowserHistory();
 
@@ -73,6 +74,7 @@ function App() {
             <Route path="Manage-Promotion" element={<Promotion />} />
             <Route path="Manage-Rating" element={<Rating />} />
             <Route path="Manage-HashTag" element={<HashTag />} />
+            <Route path="Manage-Payment" element={<Payment />} />
             <Route path="Revenue-statistics" element={<ThongKe />} />
 
           </Route>
