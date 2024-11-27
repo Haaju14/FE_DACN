@@ -4,15 +4,82 @@ import { DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 import "../../../../public/user/css/Cart.css";
 import { BASE_URL } from "../../../util/fetchfromAPI";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
 const CartPage: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isPaymentModalVisible, setPaymentModalVisible] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [paymentNote, setPaymentNote] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const requestParams = Object.fromEntries(queryParams.entries());
+
+    // Chỉ thực hiện xử lý nếu có tham số VNPay
+    if (Object.keys(requestParams).some((key) => key.startsWith("vnp_"))) {
+      const handleVNPayPaymentReturn = async (
+        params: Record<string, string>
+      ) => {
+        try {
+          const headers = getAuthHeaders();
+          const response = await axios.get(`${BASE_URL}/vnpay/paymentReturn`, {
+            params: params,
+            headers: headers,
+          });
+
+          return response.data;
+        } catch (error) {
+          console.error("Lỗi khi xác nhận thanh toán VNPay:", error);
+          throw error;
+        }
+      };
+
+      handleVNPayPaymentReturn(requestParams)
+        .then((response) => {
+          const { status, message } = response;
+
+          switch (status) {
+            case "SUCCESS":
+              // Lấy mã đơn hàng từ tham số
+              const orderCode =
+                queryParams.get("vnp_OrderInfo") ||
+                queryParams.get("orderCode") ||
+                generateOrderCode();
+
+              // Đặt trạng thái thanh toán
+              setPaymentMethod("VNPAY");
+
+              // Xử lý xác nhận thanh toán
+              handleConfirmPayment(orderCode);
+              break;
+            case "FAILED":
+              alert(message || "Giao dịch thất bại.");
+              navigate("/cart");
+              break;
+            case "INVALID":
+              alert(message || "Giao dịch không hợp lệ.");
+              navigate("/cart");
+              break;
+            default:
+              alert(message || "Lỗi không xác định.");
+              navigate("/cart");
+              break;
+          }
+        })
+        .catch((error) => {
+          console.error("Error handling VNPay payment return:", error);
+          alert("Lỗi xử lý thanh toán VNPay.");
+          navigate("/cart");
+        });
+    }
+  }, [location, navigate]);
 
   const getAuthToken = () => localStorage.getItem("token");
   const getAuthHeaders = () => {
@@ -45,7 +112,9 @@ const CartPage: React.FC = () => {
   const handleDeleteItem = async (IDDonHang: number) => {
     try {
       const headers = getAuthHeaders();
-      await axios.delete(`${BASE_URL}/don-hang/delete/${IDDonHang}`, { headers });
+      await axios.delete(`${BASE_URL}/don-hang/delete/${IDDonHang}`, {
+        headers,
+      });
       setCartItems(cartItems.filter((item) => item.IDDonHang !== IDDonHang));
     } catch (error) {
       console.error("Lỗi khi xóa đơn hàng:", error);
@@ -59,16 +128,58 @@ const CartPage: React.FC = () => {
   const handleCancelPayment = () => {
     setPaymentModalVisible(false);
   };
+  const generateOrderCode = (): string => {
+    const randomNumber = Math.floor(10000000 + Math.random() * 90000000); // Tạo mã 8 số ngẫu nhiên
+    return `ORD${randomNumber}`;
+  };
+  const handleVNPayPayment = async () => {
+    try {
+      // Tạo mã đơn hàng ngẫu nhiên
+      const orderCode = generateOrderCode();
 
-  const handleConfirmPayment = async () => {
+      // Lấy URL từ biến môi trường
+      const REACT_APP_URL = window.location.origin;
+
+      // Tính tổng giá trị đơn hàng
+      const totalPrice = calculateTotalPrice();
+
+      // Gọi API tạo thanh toán VNPay
+      const response = await axios.get(`${BASE_URL}/vnpay/payment`, {
+        params: {
+          amount: totalPrice,
+          orderCode: orderCode,
+          returnUrl: REACT_APP_URL,
+        },
+        headers: getAuthHeaders(),
+      });
+      if (response.data) {
+        // Điều hướng người dùng tới URL thanh toán VNPay
+        window.location.href = response.data;
+      } else {
+        // Thông báo lỗi nếu không có URL thanh toán
+        alert("Lỗi tạo thanh toán VNPay");
+      }
+    } catch (error) {
+      console.error("Error creating VNPay payment:", error);
+      alert("Lỗi khi tạo thanh toán VNPay");
+    }
+  };
+  const handleConfirmPayment = async (orderCode?: string) => {
     const headers = getAuthHeaders();
     const paymentData = {
-      PhuongThucThanhToan: paymentMethod,
+      PhuongThucThanhToan: paymentMethod || "VNPAY",
       NoiDungThanhToan: paymentNote || "Thanh toán giỏ hàng",
     };
-
+    if (paymentMethod === "VNPAY" && (!orderCode || orderCode.trim() === "")) {
+      await handleVNPayPayment();
+      return;
+    }
     try {
-      const response = await axios.post(`${BASE_URL}/thanh-toan/add`, paymentData, { headers });
+      const response = await axios.post(
+        `${BASE_URL}/thanh-toan/add`,
+        paymentData,
+        { headers }
+      );
       console.log("Thanh toán thành công:", response.data);
       setCartItems([]);
       alert("Thanh toán thành công!");
@@ -106,13 +217,23 @@ const CartPage: React.FC = () => {
               ) : (
                 <span>Hình ảnh không có sẵn</span>
               )}
-              <span>{item.IDKhoaHoc_KhoaHoc?.TenKhoaHoc || "Tên khóa học không có"}</span>
+              <span>
+                {item.IDKhoaHoc_KhoaHoc?.TenKhoaHoc || "Tên khóa học không có"}
+              </span>
             </div>
-            <div className="price">{item.IDKhoaHoc_KhoaHoc?.GiaTien?.toLocaleString() || "0 đ"}</div>
+            <div className="price">
+              {item.IDKhoaHoc_KhoaHoc?.GiaTien?.toLocaleString() || "0 đ"}
+            </div>
             <div className="quantity">1</div>
-            <div className="total-price">{item.TongTien?.toLocaleString() || "0 đ"}</div>
+            <div className="total-price">
+              {item.TongTien?.toLocaleString() || "0 đ"}
+            </div>
             <div className="action">
-              <Button type="text" icon={<DeleteOutlined />} onClick={() => handleDeleteItem(item.IDDonHang)} />
+              <Button
+                type="text"
+                icon={<DeleteOutlined />}
+                onClick={() => handleDeleteItem(item.IDDonHang)}
+              />
             </div>
           </div>
         ))}
@@ -128,7 +249,7 @@ const CartPage: React.FC = () => {
       <Modal
         title="Thông tin thanh toán"
         visible={isPaymentModalVisible}
-        onOk={handleConfirmPayment}
+        onOk={() => handleConfirmPayment("")}
         onCancel={handleCancelPayment}
         okText="Xác nhận"
         cancelText="Hủy"
@@ -143,6 +264,7 @@ const CartPage: React.FC = () => {
           >
             <Option value="Cash">Thanh toán tiền mặt</Option>
             <Option value="MOMO">Chuyển khoản MOMO</Option>
+            <Option value="VNPAY">Chuyển khoản VNPAY</Option>
           </Select>
         </div>
         <div>

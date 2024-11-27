@@ -76,7 +76,6 @@ function App() {
             <Route path="Manage-HashTag" element={<HashTag />} />
             <Route path="Manage-Payment" element={<Payment />} />
             <Route path="Revenue-statistics" element={<ThongKe />} />
-
           </Route>
 
           {/* 404 Route */}
@@ -84,7 +83,7 @@ function App() {
         </Routes>
 
         {/* Chatbox chỉ xuất hiện trong User Routes */}
-        {/* <Chatbox /> */}
+        <Chatbox />
       </HistoryRouter>
     </>
   );
