@@ -80,6 +80,10 @@ const PaymentManagementPage: React.FC = () => {
                     color = "orange";
                     displayText = "Thanh toán bằng MOMO";
                     break;
+                case "VNPAY":
+                    color = "blue";
+                    displayText = "Thanh toán bằng VNPAY";
+                    break;
                 default:
                     color = "gray"; // Mặc định với phương thức chưa được định nghĩa
             }

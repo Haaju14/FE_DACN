@@ -8,6 +8,7 @@ import { BASE_URL } from "../../../util/fetchfromAPI";
 import Loading from "../Antd/Loading";
 import React, { useState, useEffect } from "react";
 import "../../../../public/user/css/Detail.css";
+
 interface KhoaHocData {
   IDKhoaHoc: number;
   IDDanhMuc: number;
@@ -23,24 +24,31 @@ interface KhoaHocData {
   LinkVideo: string;
 }
 
-interface BinhLuanData {
-  IDBinhLuan: number;
-  IDKhoaHoc: number;
-  NoiDung: string;
-  IDNguoiDung: string;
-  ThoiGian: string;
-  TenNguoiDung: string;
-  replies?: BinhLuanData[];
+interface User {
+  IDNguoiDung: number;
+  AnhDaiDien: string;
+  HoTen: string;
 }
 
-interface NhanXetData {
-  IDNhanXet: number;
-  IDKhoaHoc: number;
-  IDNguoiDung: string;
+interface Reply {
+  IDReplyBinhLuan: number;
   NoiDung: string;
-  XepLoai: string;
-  ThoiGian: string;
+  IDNguoiDung_NguoiDung: User; 
 }
+
+interface BinhLuanData {
+  IDKhoaHoc: number;
+  IDBinhLuan: number;
+  NoiDung: string;
+  IDNguoiDung_NguoiDung: User; 
+  replies?: Reply[]; 
+  showReply?: boolean;
+}
+
+
+
+
+
 
 const Detail: React.FC = () => {
   const { id: IDKhoaHoc } = useParams();
@@ -56,7 +64,6 @@ const Detail: React.FC = () => {
     {}
   );
   const [comments, setComments] = useState<BinhLuanData[]>([]);
-
   if (!token) {
     return <div>Please log in to view course details.</div>;
   }
@@ -99,6 +106,8 @@ const Detail: React.FC = () => {
     }
   };
 
+  
+  
   const queryResultKhoaHocByID: UseQueryResult<KhoaHocData | undefined> =
     useQuery({
       queryKey: ["courseByIDApi", IDKhoaHoc || ""],
@@ -112,6 +121,8 @@ const Detail: React.FC = () => {
       getCommentsAPI(IDKhoaHoc, token);
     }
   }, [IDKhoaHoc, token]);
+
+  
 
   if (queryResultKhoaHocByID.isLoading) {
     return <Loading />;
@@ -182,7 +193,7 @@ const Detail: React.FC = () => {
       message.error("Vui lòng nhập nội dung trả lời.");
       return;
     }
-
+  
     const replyData: BinhLuanData = {
       IDBinhLuan: 0,
       IDKhoaHoc: Number(IDKhoaHoc),
@@ -191,7 +202,7 @@ const Detail: React.FC = () => {
       ThoiGian: new Date().toISOString(),
       TenNguoiDung: userLogin.user.HoTen || "",
     };
-
+  
     try {
       await axios.post(
         `${BASE_URL}/binh-luan/reply/${parentCommentId}`,
@@ -200,7 +211,7 @@ const Detail: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+  
       message.success("Trả lời thành công!");
       setReplyContent((prev) => ({ ...prev, [parentCommentId]: "" }));
       getCommentsAPI(IDKhoaHoc, token);
@@ -209,34 +220,44 @@ const Detail: React.FC = () => {
       message.error("Đã xảy ra lỗi trong quá trình gửi trả lời.");
     }
   };
+  
+  const toggleReply = (commentId: number) => {
+    setComments((prevComments) =>
+      prevComments.map((comment) =>
+        comment.IDBinhLuan === commentId
+          ? { ...comment, showReply: !comment.showReply }
+          : comment
+      )
+    );
+  };
 
   const handleSubmitFeedback = async () => {
     if (!rating || !feedbackContent) {
       message.error("Vui lòng chọn đánh giá và nhập nội dung nhận xét.");
       return;
     }
-
-    const feedbackData: NhanXetData = {
-      IDNhanXet: 0,
-      IDKhoaHoc: Number(IDKhoaHoc),
-      IDNguoiDung: userLogin.user.IDNguoiDung.toString(),
-      NoiDung: feedbackContent,
-      XepLoai: rating,
-      ThoiGian: new Date().toISOString(),
+  
+    // Dữ liệu cần gửi đến API
+    const feedbackData = {
+      noiDung: feedbackContent, // Nội dung nhận xét
+      xepLoai: rating,          // Đánh giá sao
     };
-
+  
     try {
+      // Gửi yêu cầu POST đến backend để thêm nhận xét
       await axios.post(`${BASE_URL}/nhan-xet/add/${IDKhoaHoc}`, feedbackData, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }, // Thêm token vào header
       });
+  
       message.success("Đánh giá thành công!");
-      setFeedbackContent("");
-      setRating(null);
+      setFeedbackContent(""); // Reset nội dung nhận xét
+      setRating(null); // Reset đánh giá sao
     } catch (error: any) {
       console.error("Error submitting feedback:", error.response || error);
       message.error("Đã xảy ra lỗi trong quá trình gửi đánh giá.");
     }
   };
+  
 
   return (
     <section className="ftco-section">
@@ -255,8 +276,7 @@ const Detail: React.FC = () => {
               </div>
               <div className="course-info mt-4">
                 <ul className="list-unstyled">
-                  {[
-                    {
+                  {[{
                       title: "Mô tả khóa học",
                       value: KhoaHocData.MoTaKhoaHoc || "Chưa có mô tả",
                     },
@@ -287,7 +307,7 @@ const Detail: React.FC = () => {
                 </button>
               </div>
             </div>
-
+  
             {/* Bình luận và Đánh giá */}
             <div className="comments-section mt-5">
               <h4 className="mb-4">Bình luận</h4>
@@ -307,33 +327,48 @@ const Detail: React.FC = () => {
                   comments.map((comment) => (
                     <div key={comment.IDBinhLuan}>
                       <p>
-                        <strong>{comment.TenNguoiDung}:</strong>{" "}
-                        {comment.NoiDung}
+                        <strong>{comment.IDNguoiDung_NguoiDung?.HoTen}:</strong> {comment.NoiDung}
                       </p>
-                      <div className="replies mt-3">
-                        {comment.replies &&
-                          comment.replies.map((reply) => (
-                            <p key={reply.IDBinhLuan} className="ml-4">
-                              <strong>{reply.TenNguoiDung}:</strong>{" "}
-                              {reply.NoiDung}
-                            </p>
-                          ))}
-                      </div>
-                      <textarea
-                        value={replyContent[comment.IDBinhLuan] || ""}
-                        onChange={(e) =>
-                          handleReplyChange(comment.IDBinhLuan, e.target.value)
-                        }
-                        className="form-control mb-3"
-                        rows={3}
-                        placeholder="Nhập trả lời..."
-                      />
+
+                      {/* Nút Trả lời sẽ chỉ hiển thị khi có bình luận */}
                       <button
-                        onClick={() => handleSubmitReply(comment.IDBinhLuan)}
-                        className="btn btn-secondary"
+                        onClick={() => toggleReply(comment.IDBinhLuan)}
+                        className="btn btn-link reply-btn"
                       >
-                        Gửi trả lời
+                        Trả lời
                       </button>
+
+                      {/* Hiển thị phần trả lời chỉ khi nút "Trả lời" được bấm */}
+                      {comment.showReply && (
+                        <div className="reply-form">
+                          <textarea
+                            value={replyContent[comment.IDBinhLuan] || ""}
+                            onChange={(e) => handleReplyChange(comment.IDBinhLuan, e.target.value)}
+                            className="form-control mb-3"
+                            rows={3}
+                            placeholder="Nhập trả lời..."
+                          />
+                          <button
+                            onClick={() => handleSubmitReply(comment.IDBinhLuan)}
+                            className="btn btn-secondary"
+                          >
+                            <i className="fas fa-paper-plane"></i> Gửi trả lời
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Hiển thị các trả lời đã có */}
+                      <div className="replies-list mt-3">
+                        {comment.replies && comment.replies.length > 0 ? (
+                          comment.replies.map((reply) => (
+                            <p key={reply.IDReplyBinhLuan} className="ml-4">
+                              <strong>{reply.IDNguoiDung_NguoiDung?.HoTen}:</strong> {reply.NoiDung}
+                            </p>
+                          ))
+                        ) : (
+                          <p className="ml-4"></p>
+                        )}
+                      </div>
                     </div>
                   ))
                 ) : (
@@ -341,7 +376,9 @@ const Detail: React.FC = () => {
                 )}
               </div>
             </div>
+
           </div>
+  
           <div className="col-lg-4">
             {/* Đánh giá */}
             <div className="feedback-section">
@@ -375,7 +412,7 @@ const Detail: React.FC = () => {
         </div>
       </div>
     </section>
-  );
+  );  
 };
 
 export default Detail;

@@ -45,7 +45,7 @@ const Login: React.FC = () => {
 
           // Điều hướng dựa trên vai trò của user
           if (user.Role === "admin" || user.Role === "giangvien") {
-            navigate("/admin-dashboard");
+            navigate("/");
           } else {
             navigate("/");
           }

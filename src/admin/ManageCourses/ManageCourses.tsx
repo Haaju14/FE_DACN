@@ -4,8 +4,7 @@ import { message, Modal, Form, Button, Card, Input, Select, Pagination } from "a
 import { DeleteOutlined, EditOutlined, UsergroupAddOutlined } from "@ant-design/icons";
 import { BASE_URL } from "../../util/fetchfromAPI";
 import "../../../public/admin/css/ManageCourse.css";
-import moment from "moment"; // Thêm thư viện moment.js nếu chưa có
-
+import moment from "moment"; 
 const ManageCourses: React.FC = () => {
     const [courses, setCourses] = useState<any[]>([]);
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -14,9 +13,9 @@ const ManageCourses: React.FC = () => {
     const getToken = () => localStorage.getItem("token");
     const [categories, setCategories] = useState<any[]>([]); 
     const [discounts, setDiscounts] = useState<any[]>([]); 
-    const [students, setStudents] = useState<any[]>([]); // State lưu danh sách học viên của khóa học
-    const [isStudentModalVisible, setIsStudentModalVisible] = useState<boolean>(false); // State mở modal danh sách học viên
-    const [registrationCount, setRegistrationCount] = useState<number>(0); // State lưu số lượt đăng ký
+    const [students, setStudents] = useState<any[]>([]); 
+    const [isStudentModalVisible, setIsStudentModalVisible] = useState<boolean>(false); 
+    const [registrationCount, setRegistrationCount] = useState<number>(0); 
     
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 5;
@@ -33,7 +32,7 @@ const ManageCourses: React.FC = () => {
         try {
             const { data } = await axios.get(`${BASE_URL}/khoa-hoc`, {
                 params: {
-                    page: currentPage - 1,  // API yêu cầu trang bắt đầu từ 0
+                    page: currentPage - 1,  
                     size: pageSize
                 }
             });
@@ -101,7 +100,7 @@ const ManageCourses: React.FC = () => {
             const response = await axios.get(`${BASE_URL}/khoa-hoc-dang-ky/hocvien/${courseId}`, config);
             setStudents(response.data.content.danhSachHocVien);
 
-            // Gọi API để lấy số lượt đăng ký và cập nhật state
+           
             const soLuotDangKy = await fetchCourseRegistrationStats(courseId);
             setRegistrationCount(soLuotDangKy);
 
@@ -215,31 +214,31 @@ const ManageCourses: React.FC = () => {
             <div style={{ marginTop: "20px" }}>
                 {courses.map((course) => (
                     <div key={course.IDKhoaHoc} className="course-card">
-                        <div>
-                            <div className="course-id">ID: {course.IDKhoaHoc}</div>
-                            <div className="course-name">{course.TenKhoaHoc}</div>
-                        </div>
-                        <div className="course-actions">
-                            <Button
-                                className="edit-button"
-                                icon={<EditOutlined />}
-                                onClick={() => handleEditCourse(course)}
-                            />
-                            <Button
-                                className="delete-button"
-                                icon={<DeleteOutlined />}
-                                onClick={() => handleDeleteCourse(course.IDKhoaHoc)}
-                            />
-                            <Button
-                                className="view-students-button"
-                                icon={<UsergroupAddOutlined />}
-                                onClick={() => fetchStudentsForCourse(course.IDKhoaHoc)}
-                            >
-                                Xem danh sách học viên
-                            </Button>
-                            
-                        </div>
+                    <div className="course-info">
+                        <div className="course-id">ID: {course.IDKhoaHoc}</div>
+                        <div className="course-name">{course.TenKhoaHoc}</div>
                     </div>
+                    <div className="course-actions">
+                        <Button
+                            className="edit-button"
+                            icon={<EditOutlined />}
+                            onClick={() => handleEditCourse(course)}
+                        />
+                        <Button
+                            className="delete-button"
+                            icon={<DeleteOutlined />}
+                            onClick={() => handleDeleteCourse(course.IDKhoaHoc)}
+                        />
+                        <Button
+                            className="view-students-button"
+                            icon={<UsergroupAddOutlined />}
+                            onClick={() => fetchStudentsForCourse(course.IDKhoaHoc)}
+                        >
+                            Xem danh sách học viên
+                        </Button>
+                    </div>
+                </div>
+                
                 ))}
             </div>
             {/* Pagination */}

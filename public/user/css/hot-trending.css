@@ -1,0 +1,94 @@
+/* Đảm bảo các slide hiển thị theo hàng ngang */
+.slick-slider {
+    position: relative; /* Đặt vị trí để căn chỉnh nút */
+    margin-bottom: 50px; /* Tạo khoảng trống bên dưới slider */
+  }
+  
+  .slick-list {
+    overflow: hidden;
+  }
+  
+  .slick-track {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Định dạng các thẻ khóa học */
+  .course-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 300px; /* Chiều cao cố định cho các slide */
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  
+  .course-card img {
+    max-height: 120px;
+    width: auto;
+    margin-bottom: 15px;
+    object-fit: cover;
+  }
+  
+  .course-card h3 {
+    font-size: 1.2rem;
+    color: #0073e6;
+    margin: 10px 0;
+  }
+  
+  .course-card p {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 5px 0;
+  }
+  
+  .course-card p strong {
+    font-weight: bold;
+    color: #333;
+  }
+  
+
+
+  /* Tùy chỉnh nút Previous và Next */
+.slick-prev,
+.slick-next {
+  position: absolute;
+  bottom: -50px; /* Đặt nút dưới slider */
+  z-index: 10;
+  background-color: transparent; /* Nền trong suốt */
+  border: none;
+  font-size: 24px; /* Kích thước icon */
+  color: #0073e6; /* Màu biểu tượng */
+  cursor: pointer;
+}
+
+/* Vị trí nút Previous */
+.slick-prev {
+  left: 45%; /* Căn giữa dưới slider */
+}
+
+/* Vị trí nút Next */
+.slick-next {
+  right: 45%; /* Căn giữa dưới slider */
+}
+
+/* Thay đổi màu khi hover */
+.slick-prev:hover,
+.slick-next:hover {
+  color: #005bb5;
+}
+
+/* Ẩn nội dung mặc định */
+.slick-prev::before,
+.slick-next::before {
+  content: '';
+}
+
+
+  
