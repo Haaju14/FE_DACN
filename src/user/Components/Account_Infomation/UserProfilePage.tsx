@@ -69,7 +69,7 @@ const UserProfilePage: React.FC = () => {
               <hr />
               <p className="text-muted">
                 <strong>Lưu ý:</strong> Để thay đổi thông tin cá nhân, vui lòng
-                sử dụng mục *Chỉnh sửa* (tích hợp form cập nhật sau này).
+                sử dụng mục *Edit profile* hoặc thay đổi mật khẩu *Đổi mật khẩu* .
               </p>
             </div>
           </div>
