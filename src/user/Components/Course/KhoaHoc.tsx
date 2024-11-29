@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { message } from "antd";
 import { HeartOutlined, HeartFilled, ShoppingCartOutlined } from "@ant-design/icons";
+import '../../../../public/user/css/KhoaHoc.css'
 
 interface KhoaHocData {
     IDKhoaHoc: number;
@@ -158,63 +159,62 @@ const KhoaHocComponent: React.FC = () => {
         <section className="ftco-section bg-light">
             <div className="container">
                 <div className="row">
-                    <div className="col-lg-3 sidebar">
-                        <div className="sidebar-wrap bg-light ftco-animate">
-                            <form action="#">
-                                <div className="fields">
-                                    <h3 className="heading mb-4">Tìm kiếm nâng cao</h3>
-                                    <span>Tìm kiếm theo tên</span>
-                                    <div className="form-group">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            value={searchTerm}
-                                            onChange={handleSearchChange}
-                                        />
-                                    </div>
-                                    <span>Loại khóa học</span>
-                                    <div className="form-group">
-                                        <div className="select-wrap one-third">
-                                            <select
-                                                className="form-control"
-                                                value={selectedType}
-                                                onChange={handleTagChange}
-                                            >
-                                                <option value="">Tất cả loại khóa học</option>
-                                                <option value="mien_phi">Miễn phí</option>
-                                                <option value="tra_phi">Trả phí</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <span>Danh mục khóa học</span>
-                                    <div className="form-group">
-                                        <div className="select-wrap one-third">
-                                            <select
-                                                className="form-control"
-                                                value={selectedCategory}
-                                                onChange={handleCategoryChange}
-                                            >
-                                                <option value="">Tất cả danh mục</option>
-                                                <option value="1">Lập trình Java</option>
-                                                <option value="2">Lập trình Python</option>
-                                                <option value="3">Phát triển Web</option>
-                                                <option value="4">Lập trình C#</option>
-                                                <option value="5">Khoa học Dữ liệu</option>
-                                                <option value="6">Trí tuệ Nhân tạo</option>
-                                                <option value="7">Phát triển Ứng dụng Di động</option>
-                                                <option value="8">An ninh Mạng</option>
-                                                <option value="9">Phân tích Dữ liệu</option>
-                                                <option value="10">Máy học</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <span>Tầm giá</span>
-                                    <RangeSliderComponent onChange={handlePriceRangeChange} />
-
-                                </div>
-                            </form>
+                <div className="col-lg-3 custom-sidebar">
+                    <div className="custom-sidebar-wrap bg-light ftco-animate">
+                        <form action="#">
+                        <div className="fields">
+                            <h3 className="custom-heading mb-4">Tìm kiếm nâng cao</h3>
+                            <span>Tìm kiếm theo tên</span>
+                            <div className="custom-form-group">
+                            <input
+                                type="text"
+                                className="custom-form-control"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                            />
+                            </div>
+                            <span>Loại khóa học</span>
+                            <div className="custom-form-group">
+                            <div className="custom-select-wrap one-third">
+                                <select
+                                className="custom-form-control"
+                                value={selectedType}
+                                onChange={handleTagChange}
+                                >
+                                <option value="">Tất cả loại khóa học</option>
+                                <option value="mien_phi">Miễn phí</option>
+                                <option value="tra_phi">Trả phí</option>
+                                </select>
+                            </div>
+                            </div>
+                            <span>Danh mục khóa học</span>
+                            <div className="custom-form-group">
+                            <div className="custom-select-wrap one-third">
+                                <select
+                                className="custom-form-control"
+                                value={selectedCategory}
+                                onChange={handleCategoryChange}
+                                >
+                                <option value="">Tất cả danh mục</option>
+                                <option value="1">Lập trình Java</option>
+                                <option value="2">Lập trình Python</option>
+                                <option value="3">Phát triển Web</option>
+                                <option value="4">Lập trình C#</option>
+                                <option value="5">Khoa học Dữ liệu</option>
+                                <option value="6">Trí tuệ Nhân tạo</option>
+                                <option value="7">Phát triển Ứng dụng Di động</option>
+                                <option value="8">An ninh Mạng</option>
+                                <option value="9">Phân tích Dữ liệu</option>
+                                <option value="10">Máy học</option>
+                                </select>
+                            </div>
+                            </div>
+                            
                         </div>
+                        </form>
                     </div>
+                    </div>
+
                     <div className="col-lg-9">
                         <div className="khoa-hoc-list">
                             <div className="row">

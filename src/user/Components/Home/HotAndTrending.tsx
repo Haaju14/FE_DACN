@@ -34,7 +34,6 @@ const HotAndTrendingCourses: React.FC = () => {
       setHotCourses(hotResponse.data.content || []);
       setTrendingCourses(trendingResponse.data.content || []);
     } catch (error) {
-      message.error("Lỗi khi tải danh sách khóa học!");
       console.error("Fetch Error:", error);
     } finally {
       setLoading(false);

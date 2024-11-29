@@ -141,37 +141,38 @@ const KhoaHocCombinedComponent: React.FC = () => {
         <section className="ftco-section bg-light">
             <div className="container">
             <div className="row">
-                <div className="col-lg-3 sidebar">
-                        <div className="sidebar-wrap bg-light ftco-animate">
-                            <form action="#">
-                                <div className="fields">
-                                    <div className="form-group">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Tìm kiếm khóa học theo tên"
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                        />
-                                    </div>
-                                    <span>Danh sách khóa học</span>
-                                    <div className="form-group">
-                                        <div className="select-wrap one-third">
-                                            <select
-                                                className="form-control"
-                                                value={selectedType}
-                                                onChange={(e) => setSelectedType(e.target.value)}
-                                            >
-                                                <option value="">Tất cả khóa học</option>
-                                                <option value="Like">Khóa học đã yêu thích</option>
-                                                <option value="Registed">Khóa học đã đăng ký</option>
-                                            </select>
-                                        </div>
-                                    </div>
+            <div className="col-lg-3 custom-sidebar">
+                <div className="custom-sidebar-wrap bg-light ftco-animate">
+                        <form action="#">
+                        <div className="custom-fields">
+                            <div className="custom-form-group">
+                                <input
+                                    type="text"
+                                    className="custom-form-control"
+                                    placeholder="Tìm kiếm khóa học theo tên"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                                <span>Danh sách khóa học</span>
+                            <div className="custom-form-group">
+                                <div className="custom-select-wrap one-third">
+                                    <select
+                                    className="custom-form-control"
+                                    value={selectedType}
+                                    onChange={(e) => setSelectedType(e.target.value)}
+                                    >
+                                    <option value="">Tất cả khóa học</option>
+                                    <option value="Like">Khóa học đã yêu thích</option>
+                                    <option value="Registed">Khóa học đã đăng ký</option>
+                                    </select>
                                 </div>
-                            </form>
+                        </div>
+                        </div>
+                        </form>
                         </div>
                     </div>
+
 
                     <div className="col-md-8">
                         <div className="khoa-hoc-list">

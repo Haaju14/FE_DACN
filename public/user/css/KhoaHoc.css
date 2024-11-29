@@ -1,0 +1,97 @@
+/* Định dạng container chính */
+.custom-sidebar {
+  position: relative;
+  width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng cột */
+  margin-bottom: 20px;
+}
+
+.custom-sidebar-wrap {
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+}
+
+/* Tiêu đề */
+.custom-sidebar-wrap h3.custom-heading {
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Dạng chữ trong các form */
+.custom-sidebar-wrap .custom-form-group span {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+/* Input tìm kiếm */
+.custom-sidebar-wrap input.custom-form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+/* Select dropdown */
+.custom-sidebar-wrap select.custom-form-control {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  font-size: 0.9rem;
+  color: #333;
+  appearance: none; /* Ẩn mũi tên mặc định */
+}
+
+.custom-sidebar-wrap select.custom-form-control:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+/* Tầm giá (nếu cần thêm khoảng cách) */
+.custom-sidebar-wrap .custom-range-slider {
+  margin-top: 15px;
+}
+
+/* Responsive */
+@media (min-width: 992px) {
+  .custom-sidebar {
+    position: fixed; /* Cố định bên trái giao diện */
+    top: 100px; /* Khoảng cách phía trên */
+    left: 0; /* Căn lề trái */
+    width: 25%; /* Chiếm 25% chiều rộng màn hình */
+  }
+}
+
+@media (max-width: 991px) {
+  .custom-sidebar {
+    position: relative;
+    width: 100%; /* Trả về 100% chiều rộng cho màn hình nhỏ */
+    margin-bottom: 20px;
+  }
+}
+
+.custom-sidebar-wrap .custom-select-wrap {
+  position: relative;
+}
+
+.custom-sidebar-wrap .custom-select-wrap:after {
+  content: "\f107"; /* FontAwesome chevron-down */
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 0.8rem;
+  color: #333;
+}

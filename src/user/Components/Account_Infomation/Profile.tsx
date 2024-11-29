@@ -121,43 +121,9 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
         </div>
       )}
       <div className="profile card p-3">
-        <div className="profile-header d-flex align-items-center">
-          <div>
-            <div
-              className="profile-picture bg-secondary rounded-circle d-flex justify-content-center align-items-center"
-              style={{ width: "100px", height: "100px" }}
-            >
-              <img
-                src={userData.AnhDaiDien || "/default-avatar.png"}
-                alt="Profile Picture"
-                className="rounded-circle"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-
-            <span
-              className="update-photo"
-              onClick={() => document.getElementById("fileInput")?.click()}
-            >
-              Change Avatar
-            </span>
-            <input
-              type="file"
-              id="fileInput"
-              style={{ display: "none" }}
-              accept="image/*"
-              onChange={handleFileChange}
-            />
-          </div>
-          <div className="profile-verification ml-auto d-flex flex-column align-items-start">
-            <span className="badge badge-success mb-2">Thành tựu</span>
-            <span className="badge badge-primary">Học viên chăm chỉ</span>
-            <span className="badge badge-primary">Học viên nhiều đóng góp</span>
-            <span className="badge badge-primary">Học viên chăm chỉ</span>
-          </div>
-        </div>
+        
         <div className="profile-info mt-3">
-          <h2>Hello, I'm {userData.TenDangNhap}</h2>
+          <h2>Hello, I'm {userData.HoTen}</h2>
           <p>Join in 2024</p>
           <button className="btn btn-outline-primary" onClick={() => setShowModal(true)}>
             Edit profile
