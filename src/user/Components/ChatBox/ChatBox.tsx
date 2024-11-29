@@ -4,6 +4,7 @@ import { BASE_URL } from "../../../util/fetchfromAPI";
 import "../../../../public/user/css/ChatBox.css";
 import { io } from "socket.io-client";
 import { jwtDecode } from "jwt-decode";
+import { useRef } from "react";
 
 const socket = io("ws://localhost:8081");
 
@@ -15,10 +16,11 @@ const ChatApp: React.FC = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [sidebarVisible, setSidebarVisible] = useState<boolean>(false);
-  const [dataChat, setDataChat] = useState<
-    { content: string; IDNguoiDung: number }[]
-  >([]);
-  const [roomId, setRoomId] = useState<string | null>(null); // Thêm roomId để quản lý ID phòng
+
+  const [dataChat, setDataChat] = useState<any[]>([]);
+  const [roomId, setRoomId] = useState<string | null>(null);
+
+  const discussionRef = useRef<HTMLOListElement | null>(null);
 
   const getToken = () => localStorage.getItem("token");
 
@@ -28,7 +30,6 @@ const ChatApp: React.FC = () => {
       try {
         return jwtDecode<any>(token);
       } catch (error) {
-        console.error("Lỗi khi decode token:", error);
         return null;
       }
     }
@@ -42,7 +43,6 @@ const ChatApp: React.FC = () => {
         const userData = JSON.parse(userLogin);
         return userData.user.Role;
       } catch (error) {
-        console.error("Lỗi khi phân tích JSON từ localStorage:", error);
         return null;
       }
     }
@@ -59,7 +59,6 @@ const ChatApp: React.FC = () => {
         !role ||
         !["admin", "giangvien", "hocvien"].includes(role)
       ) {
-        console.error("Token hoặc role không hợp lệ");
         return;
       }
 
@@ -109,9 +108,7 @@ const ChatApp: React.FC = () => {
       }
 
       setUsers(allUsers);
-    } catch (error) {
-      console.error("Lỗi khi lấy danh sách người dùng:", error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -119,79 +116,62 @@ const ChatApp: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Đã kết nối với server socket");
-    });
+    socket.on("connect", () => {});
     // Lắng nghe tin nhắn từ socket
     socket.on("sv-send-mess", ({ message, userId, roomId: receivedRoomId }) => {
-      console.log("Received message:", { message, userId, receivedRoomId }); // Log tin nhắn nhận được
-      // Kiểm tra nếu tất cả các trường cần thiết có dữ liệu
-      if (!message || !userId || !receivedRoomId) {
-        console.error("Missing fields in received data:", {
-          message,
-          userId,
-          receivedRoomId,
-        });
-        return;
-      }
+      if (!message || !userId || !receivedRoomId) return;
 
       if (receivedRoomId === roomId) {
-        // Kiểm tra nếu roomId khớp
-        setDataChat((prev) => {
-          const newDataChat = [
-            ...prev,
-            { content: message, IDNguoiDung: userId },
-          ];
-          console.log("Updated dataChat:", newDataChat); // Log cập nhật dataChat
-          return newDataChat;
-        });
+        setDataChat((prev) => [
+          ...prev,
+          { content: message, IDNguoiDung: userId },
+        ]);
+      }
+    });
+
+    socket.on("send-message", (newChat) => {
+      if (newChat.roomId === roomId) {
+        setDataChat((prev) => [...prev, newChat]);
       }
     });
 
     return () => {
       socket.off("sv-send-mess");
+      socket.off("send-message");
     };
   }, [roomId]);
 
   const showChat = () => {
-    console.log("Opening chat...");
     setSidebarVisible(true);
   };
 
-  useEffect(() => {
-    console.log("Sidebar visibility:", sidebarVisible);
-  }, [sidebarVisible]);
+  useEffect(() => {}, [sidebarVisible]);
 
   const joinRoom = (selectedUser: any) => {
     const token = getToken();
     if (!token) {
-      console.log("Token không hợp lệ");
       return;
     }
-
-    console.log("Token:", token); // Kiểm tra token lấy được
     const infoUser: any = jwtDecode(token);
 
     // Kiểm tra xem thông tin người dùng đăng nhập có hợp lệ không
     if (!infoUser || !infoUser.data || !infoUser.data.id) {
-      console.log("Thông tin người dùng không hợp lệ hoặc không có ID");
       return;
     }
-
-    console.log("Decoded user info:", infoUser); // In thông tin giải mã
 
     // Lấy ID của người đăng nhập và ID người dùng đã chọn
     const currentUserID = infoUser.data.id; // ID người dùng đăng nhập
     const selectedUserID = selectedUser.IDNguoiDung; // ID của người dùng trong danh sách chọn
 
     if (!selectedUserID) {
-      console.log("Thông tin người dùng cần chat không hợp lệ");
       return;
     }
 
-    // Tạo roomId từ ID của người đăng nhập và người dùng đã chọn
-    const newRoomId = `${currentUserID}-${selectedUserID}`;
-    console.log("Room ID:", newRoomId);
+    // Tạo roomId từ ID của người đăng nhập và người dùng đã chọn, luôn đảm bảo ID nhỏ hơn trước
+    const newRoomId =
+      currentUserID < selectedUserID
+        ? `${currentUserID}-${selectedUserID}`
+        : `${selectedUserID}-${currentUserID}`;
 
     // Cập nhật roomId trong state và localStorage
     setRoomId(newRoomId);
@@ -199,10 +179,29 @@ const ChatApp: React.FC = () => {
 
     // Tham gia vào phòng chat với roomId vừa tạo
     socket.emit("join-room", newRoomId);
-    setSelectedUser(selectedUser); // Lưu thông tin người dùng đã chọn
+    setSelectedUser(selectedUser);
   };
 
+  useEffect(() => {
+    // Lắng nghe sự kiện "data-chat" từ server
+    socket.on("data-chat", (data) => {
+      setDataChat(data); // Cập nhật lại dữ liệu chat trong state
+    });
+
+    // Cleanup listener khi component unmount
+    return () => {
+      socket.off("data-chat");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (discussionRef.current) {
+      discussionRef.current.scrollTop = discussionRef.current.scrollHeight;
+    }
+  }, [dataChat]);
+
   return (
+    // <div className="chat-window">
     <div className="chat-app">
       <button className="chat-icon" onClick={showChat}>
         <i className="gg-chat" />
@@ -259,29 +258,33 @@ const ChatApp: React.FC = () => {
             </button>
           </div>
 
-          <ol className="discussion">
-            {dataChat?.map((item) => {
+          <ol className="discussion" ref={discussionRef}>
+            {dataChat.map((item, index) => {
               const token = getToken();
               if (!token) return null;
 
               const infoUser: any = jwtDecode(token);
-              if (!infoUser) return null;
 
               return (
                 <li
-                  key={item.IDNguoiDung}
+                  key={`${item.IDNguoiDung}-${index}`}
                   className={
-                    infoUser.user.IDNguoiDung === item.IDNguoiDung ? "self" : ""
+                    infoUser?.data?.id === item.IDNguoiDung ? "self" : ""
                   }
                 >
                   <div className="avatar">
                     <img
-                      src="https://amp.businessinsider.com/images/5947f16889d0e20d5e04b3d9-750-562.jpg"
+                      src="https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"
                       alt="User Avatar"
+                      style={{
+                        width: "25px",
+                        height: "25px",
+                        borderRadius: "50%",
+                      }}
                     />
                   </div>
                   <div className="message-box">
-                    <span>{item.content}</span>
+                    <span>{item.Content}</span>
                   </div>
                 </li>
               );
@@ -294,7 +297,6 @@ const ChatApp: React.FC = () => {
               if (currentMessage.trim() !== "") {
                 const token = getToken();
                 if (!token) {
-                  console.log("Token không hợp lệ");
                   return;
                 }
 
@@ -302,26 +304,26 @@ const ChatApp: React.FC = () => {
 
                 // Kiểm tra thông tin người dùng hiện tại
                 if (!infoUser || !infoUser.data || !infoUser.data.id) {
-                  console.log(
-                    "Thông tin người dùng không hợp lệ hoặc không có ID"
-                  );
                   return;
                 }
 
-                const currentUserID = infoUser.data.id; // Lấy ID người dùng đăng nhập
+                const currentUserID = infoUser.data.id;
 
                 const newChat = {
-                  IDNguoiDung: currentUserID, // ID người dùng đăng nhập
-                  Content: currentMessage, // Tin nhắn
-                  RoomId: roomId, // ID phòng
-                  NgayGui: new Date().toISOString().slice(0, 10), // Ngày gửi
+                  IDNguoiDung: currentUserID,
+                  Content: currentMessage,
+                  RoomId: roomId,
+                  NgayGui: new Date().toISOString().slice(0, 10),
                 };
 
-                console.log("Sending message:", newChat); // Log dữ liệu kiểm tra
+                socket.emit("send-message", newChat);
 
-                socket.emit("send-message", newChat); // Gửi dữ liệu qua socket
+                setDataChat((prev) => [
+                  ...prev,
+                  { Content: currentMessage, IDNguoiDung: currentUserID },
+                ]);
 
-                setCurrentMessage(""); // Reset input sau khi gửi tin nhắn
+                setCurrentMessage("");
               }
             }}
           >
@@ -336,6 +338,7 @@ const ChatApp: React.FC = () => {
         </div>
       )}
     </div>
+    // </div>
   );
 };
 
