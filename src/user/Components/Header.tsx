@@ -75,7 +75,7 @@ const Header: React.FC = () => {
                   <li className="nav-item d-flex align-items-center">
                     <ShoppingCartOutlined
                       onClick={handleCartClick}
-                      style={{ fontSize: "24px", color: "white", cursor: "pointer" }}
+                      style={{ fontSize: "24px", color: "white", cursor: "pointer",marginRight: "15px" }}
                     />
                   </li>
                 </>

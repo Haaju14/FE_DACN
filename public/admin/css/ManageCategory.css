@@ -1,97 +1,138 @@
-/* ManageCategories.css */
+/* Tổng quan Container */
 .manage-categories-container {
     width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 3000px;
+    margin: 20px auto;
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .manage-categories-container h1 {
     text-align: center;
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
+    font-size: 26px;
+    color: #2c3e50;
+    font-weight: bold;
+    margin-top: 30px;
 }
 
-/* Đổi từ flex sang grid layout để hiển thị danh mục giống khuyến mãi */
+/* Danh sách danh mục */
 .category-list {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Hiển thị 2 cột */
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Hiển thị linh hoạt */
+    gap: 20px;
 }
 
+/* Card danh mục */
 .category-card {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    transition: box-shadow 0.3s;
+    background-color: #f7f9fc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #dfe4ea;
+    transition: box-shadow 0.3s, transform 0.3s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
 .category-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
 }
 
+/* Thông tin danh mục */
 .category-details h2 {
-    font-size: 18px;
-    color: #333;
+    font-size: 20px;
+    color: #34495e;
+    font-weight: bold;
+    margin-bottom: 8px;
 }
 
 .category-details p {
-    color: #666;
-    margin: 5px 0;
+    color: #7f8c8d;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 10px;
 }
 
+/* Hành động */
 .category-actions {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
-    margin-top: 10px;
+    margin-top: auto; /* Đẩy nút xuống dưới cùng của thẻ */
 }
 
 .category-actions .ant-btn {
-    padding: 6px 12px;
+    padding: 8px 16px;
     font-size: 14px;
+    border-radius: 8px;
+    font-weight: 500;
 }
 
+/* Nút Xem */
 .category-actions .ant-btn-eye {
-    background-color: #1890ff;
-    color: #fff;
+    background-color: #3498db;
+    color: #ffffff;
+    border: none;
 }
 
+.category-actions .ant-btn-eye:hover {
+    background-color: #5dade2;
+}
+
+/* Nút Sửa */
 .category-actions .category-edit-button {
-    background-color: #1890ff;
-    color: #fff;
+    background-color: #1abc9c;
+    color: #ffffff;
+    border: none;
 }
 
 .category-actions .category-edit-button:hover {
-    background-color: #40a9ff;
+    background-color: #48c9b0;
 }
 
+/* Nút Xóa */
 .category-actions .category-delete-button {
-    background-color: #ff4d4f;
-    color: #fff;
+    background-color: #e74c3c;
+    color: #ffffff;
+    border: none;
 }
 
 .category-actions .category-delete-button:hover {
-    background-color: #ff7875;
+    background-color: #f1948a;
 }
 
-/* Modal customization */
+/* Tùy chỉnh Modal */
 .ant-modal {
-    border-radius: 8px;
+    border-radius: 10px;
+    padding: 15px;
 }
 
 .ant-modal-title {
     text-align: center;
-    font-size: 20px;
-    color: #333;
+    font-size: 22px;
+    color: #2c3e50;
+    font-weight: bold;
 }
 
 .ant-modal-footer {
     display: flex;
     justify-content: center;
+    gap: 15px;
+}
+
+/* Responsive - Căn chỉnh lưới danh mục trên màn hình nhỏ */
+@media (max-width: 768px) {
+    .category-list {
+        grid-template-columns: 1fr; /* 1 cột trên màn hình nhỏ */
+    }
+
+    .category-actions {
+        flex-direction: column;
+        gap: 8px;
+        justify-content: flex-start;
+    }
 }

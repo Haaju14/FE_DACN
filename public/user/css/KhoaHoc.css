@@ -56,9 +56,16 @@
   box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
 }
 
-/* Tầm giá (nếu cần thêm khoảng cách) */
-.custom-sidebar-wrap .custom-range-slider {
-  margin-top: 15px;
+/* Cố định input tìm kiếm khi cuộn trang */
+.custom-sidebar-wrap .custom-search {
+  position: sticky;
+  top: 20px; /* Khoảng cách từ trên cùng */
+  left: 0;
+  z-index: 10; /* Đảm bảo input tìm kiếm ở trên cùng */
+  width: 100%;
+  padding-left: 10px; /* Giảm padding bên trái để sát với viền */
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Thêm bóng để nổi bật */
 }
 
 /* Responsive */

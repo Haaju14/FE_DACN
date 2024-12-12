@@ -8,7 +8,7 @@ const SectionInformation: React.FC = () => {
         <div className="row">
           <div
             className="col-md-5 p-md-5 img-4 img-2 d-flex justify-content-center align-items-center"
-            style={{ backgroundImage: "url(user/images/)" }}
+            style={{ backgroundImage: "url(user/images/3.jpg)" }}
             >
             <NavLink
               to="https://vimeo.com/1018941577"
@@ -20,17 +20,15 @@ const SectionInformation: React.FC = () => {
           <div className="col-md-7 py-5 wrap-about pb-md-5 ftco-animate">
             <div className="heading-section heading-section-wo-line pt-md-5 pl-md-5 mb-5">
               <div className="ml-md-0">
-                <span className="subheading">Welcome to H&H</span>
-                <h2 className="mb-4">Welcome To Our System</h2>
+                <h2 className="mb-4">Chào mừng bạn đến với H&H</h2>
               </div>
             </div>
             <div className="pb-md-5">
               <p>
-                Hau
-              </p>
-              <p>
-                Hung
-              </p>
+              Tại đây, chúng tôi cung cấp hàng trăm khóa học đa dạng thuộc lĩnh vực công nghệ thông tin,được xây dựng bởi đội ngũ
+              hàng đầu.Dù bạn là người mới bắt đầu hay chuyên gia muốn nâng cao kỹ năng, H&H
+              sẽ là người bạn đồng hành trên hành trình phát triển của bạn.
+              </p> 
               <ul className="ftco-social d-flex">
                 <li className="ftco-animate">
                   <NavLink to="/">

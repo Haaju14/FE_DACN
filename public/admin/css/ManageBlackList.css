@@ -1,93 +1,88 @@
 /* Định dạng cho container chứa danh sách khóa học */
 .manage-blacklist-container {
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-  }
-  
-  /* Tiêu đề */
-  .manage-blacklist-container h1 {
-    text-align: center;
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  /* Định dạng cho Grid chứa các thẻ Card */
-  .blacklist-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 cột */
-    gap: 20px;
-    width: 100%; /* Đảm bảo grid chiếm toàn bộ chiều rộng */
-    box-sizing: border-box; /* Đảm bảo padding không ảnh hưởng */
-  }
-  
-  /* Định dạng thẻ Card */
-  .blacklist-card {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-  }
-  
-  .blacklist-card:hover {
-    transform: scale(1.05);
-  }
-  
-  /* Định dạng các thông tin bên trong Card */
-  
-  
-  .course-info i {
-    margin-right: 10px;
-    color: #007bff; /* Màu xanh cho icon */
-  }
-  .course-info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: start; /* Căn các phần tử bắt đầu từ trên cùng */
-    margin-bottom: 8px;
-  }
-  
-  .course-info {
-    display: flex;
-    align-items: center; /* Căn biểu tượng và văn bản trong cùng một dòng */
-  }
-  
-  
-  
-  
-  .info-label {
-    font-weight: bold;
-    color: #333;
-    margin-right: 5px;
-  }
-  
-  /* Nút Gỡ bỏ */
-  .btn-danger {
-    display: inline-flex;
-    align-items: center;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .btn-danger:hover {
-    background-color: #c82333;
-  }
-  
-  .btn-danger i {
-    margin-right: 5px; /* Khoảng cách giữa icon và chữ */
-  }
-  
-  /* Đảm bảo hiển thị tốt trên màn hình nhỏ */
-  @media (max-width: 768px) {
-    .blacklist-grid {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+/* Tiêu đề */
+.manage-blacklist-container h1 {
+  text-align: center;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Định dạng cho Grid chứa các thẻ Card */
+.manage-blacklist-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 cột */
+  gap: 20px;
+  width: 100%; /* Đảm bảo grid chiếm toàn bộ chiều rộng */
+  box-sizing: border-box; /* Đảm bảo padding không ảnh hưởng */
+}
+
+/* Định dạng thẻ Card */
+.manage-blacklist-card {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.manage-blacklist-card:hover {
+  transform: scale(1.05);
+}
+
+/* Định dạng các thông tin bên trong Card */
+.manage-blacklist-course-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: start; /* Căn các phần tử bắt đầu từ trên cùng */
+  margin-bottom: 8px;
+}
+
+.manage-blacklist-course-info {
+  display: flex;
+  align-items: center; /* Căn biểu tượng và văn bản trong cùng một dòng */
+}
+
+.manage-blacklist-course-info i {
+  margin-right: 10px;
+  color: #007bff; /* Màu xanh cho icon */
+}
+
+.manage-blacklist-course-info .info-label {
+  font-weight: bold;
+  color: #333;
+  margin-right: 5px;
+}
+
+/* Nút Gỡ bỏ */
+.manage-blacklist-btn {
+  display: inline-flex;
+  align-items: center;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.manage-blacklist-btn:hover {
+  background-color: #c82333;
+}
+
+.manage-blacklist-btn i {
+  margin-right: 5px; /* Khoảng cách giữa icon và chữ */
+}
+
+/* Đảm bảo hiển thị tốt trên màn hình nhỏ */
+@media (max-width: 768px) {
+  .manage-blacklist-grid {
       grid-template-columns: 1fr; /* 1 cột trên màn hình nhỏ */
-    }
   }
-  
+}

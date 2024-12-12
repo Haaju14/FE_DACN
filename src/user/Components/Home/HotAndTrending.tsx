@@ -84,7 +84,8 @@ const HotAndTrendingCourses: React.FC = () => {
   }
 
   return (
-    <div>
+    <>
+    <div style={{ marginTop: "100px" }}>
       <h1>Khóa Học Hot</h1>
       {hotCourses.length > 0 ? (
         <Slider {...sliderSettings}>
@@ -95,8 +96,7 @@ const HotAndTrendingCourses: React.FC = () => {
                 src={course.HinhAnh}
                 alt={course.TenKhoaHoc}
                 onClick={() => navigate(`/khoa-hoc/xem-chi-tiet/${course.IDKhoaHoc}`)}
-                style={{ cursor: "pointer" }}
-              />
+                style={{ cursor: "pointer" }} />
               <h3
                 onClick={() => navigate(`/khoa-hoc/xem-chi-tiet/${course.IDKhoaHoc}`)}
                 style={{ cursor: "pointer", color: "#0073e6" }}
@@ -105,7 +105,7 @@ const HotAndTrendingCourses: React.FC = () => {
               </h3>
               <p>{course.MoTaKhoaHoc}</p>
               <p>
-                
+
                 <i className="fas fa-thumbs-up" style={{ color: "#28a745", marginRight: "5px" }}></i>
                 {course.SoLuongTichCuc}
               </p>
@@ -115,38 +115,39 @@ const HotAndTrendingCourses: React.FC = () => {
       ) : (
         <p>Không có khóa học hot để hiển thị.</p>
       )}
-
-      <h1>Khóa Học Xu Hướng</h1>
-      {trendingCourses.length > 0 ? (
-        <Slider {...sliderSettings}>
-          {trendingCourses.map((course) => (
-            <div key={course.IDKhoaHoc} className="course-card">
-              {/* Thêm onClick để điều hướng */}
-              <img
-                src={course.HinhAnh}
-                alt={course.TenKhoaHoc}
-                onClick={() => navigate(`/khoa-hoc/xem-chi-tiet/${course.IDKhoaHoc}`)}
-                style={{ cursor: "pointer" }}
-              />
-              <h3
-                onClick={() => navigate(`/khoa-hoc/xem-chi-tiet/${course.IDKhoaHoc}`)}
-                style={{ cursor: "pointer", color: "#0073e6" }}
-              >
-                {course.TenKhoaHoc}
-              </h3>
-              <p>{course.MoTaKhoaHoc}</p>             
-              <p>
-                
-                <i className="fas fa-thumbs-up" style={{ color: "#28a745", marginRight: "5px" }}></i>
-                {course.SoLuongTichCuc}
-              </p>
-            </div>
-          ))}
-        </Slider>
-      ) : (
-        <p>Không có khóa học xu hướng để hiển thị.</p>
-      )}
     </div>
+    <div style={{ marginTop: "100px" ,marginBottom:"100px"}}>
+        <h1>Khóa Học Xu Hướng</h1>
+        {trendingCourses.length > 0 ? (
+          <Slider {...sliderSettings}>
+            {trendingCourses.map((course) => (
+              <div key={course.IDKhoaHoc} className="course-card">
+                {/* Thêm onClick để điều hướng */}
+                <img
+                  src={course.HinhAnh}
+                  alt={course.TenKhoaHoc}
+                  onClick={() => navigate(`/khoa-hoc/xem-chi-tiet/${course.IDKhoaHoc}`)}
+                  style={{ cursor: "pointer" }} />
+                <h3
+                  onClick={() => navigate(`/khoa-hoc/xem-chi-tiet/${course.IDKhoaHoc}`)}
+                  style={{ cursor: "pointer", color: "#0073e6" }}
+                >
+                  {course.TenKhoaHoc}
+                </h3>
+                <p>{course.MoTaKhoaHoc}</p>
+                <p>
+
+                  <i className="fas fa-thumbs-up" style={{ color: "#28a745", marginRight: "5px" }}></i>
+                  {course.SoLuongTichCuc}
+                </p>
+              </div>
+            ))}
+          </Slider>
+        ) : (
+          <p>Không có khóa học xu hướng để hiển thị.</p>
+        )}
+     </div>
+    </>
   );
 };
 

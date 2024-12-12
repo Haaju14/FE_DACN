@@ -10934,6 +10934,12 @@ textarea.form-control {
   cursor: -moz-zoom-in;
   cursor: zoom-in;
 }
+.popup-vimeo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 
 .mfp-with-zoom .mfp-container,
 .mfp-with-zoom.mfp-bg {
@@ -12231,56 +12237,78 @@ textarea.form-control {
 }
 /*------------------- Khóa Học -----------------------------*/
 .khoa-hoc-list {
-  display: flex; 
-  flex-wrap: wrap; 
-  justify-content: center; /* Căn giữa nội dung */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Căn giữa các phần tử */
+  gap: 20px; /* Khoảng cách đều giữa các phần tử */
 }
 
 .khoa-hoc-item {
-  flex: 0 1 calc(33.333% - 16px); 
-  margin: 8px; /* Giảm khoảng cách giữa các mục */
-  border: 1px solid #ddd; 
-  border-radius: 8px; 
-  padding: 16px; 
-  background-color: #fff; 
-  display: flex; 
-  flex-direction: column; 
-  height: 100%; 
-  transition: transform 0.3s, box-shadow 0.3s; 
-  position: relative; 
-  min-width: 250px; /* Đặt chiều rộng tối thiểu để đảm bảo đẹp */
-  max-width: 400px; /* Đặt chiều rộng tối đa */
+  flex: 0 1 calc(25% - 10px); 
+  margin: 0;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 16px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  height: 98%;
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  min-width: 300px;
+  max-width: 400px; /* Giới hạn chiều rộng tối đa */
+  margin-left: 50px;
 }
 
 .khoa-hoc-item img {
-  border-radius: 8px; 
-  margin-bottom: 12px; 
-  object-fit: cover; 
-  height: 200px; 
+  border-radius: 12px;
+  margin-bottom: 12px;
+  object-fit: cover; /* Giữ tỷ lệ ảnh và cắt bớt phần thừa */
+  width: 100%; /* Giới hạn chiều rộng của ảnh */
+  height: 200px; /* Cố định chiều cao ảnh */
+  object-position: center; /* Đảm bảo ảnh căn giữa */
 }
+
 
 .khoa-hoc-item h3,
 .khoa-hoc-item p {
-  flex: 1; 
-  margin: 0; 
+  flex: 1;
+  margin: 0;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.15rem;
+  
 }
 
 .khoa-hoc-item:hover {
-  transform: translateY(-50px); /* Điều chỉnh hiệu ứng hover */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); 
+  transform: translateY(-30px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .button-group {
-  margin-top: auto; 
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between; /* Giãn cách các nút */
+}
+.button-group button {
+  font-size: 14px; /* Giảm kích thước font */
+  padding: 6px 12px; /* Giảm padding để nút nhỏ lại */
+  min-width: auto; /* Loại bỏ chiều rộng tối thiểu */
+  height: auto; /* Đảm bảo chiều cao tự động điều chỉnh */
 }
 
-/* Tùy chọn: Giúp căn giữa nội dung trong trường hợp chỉ có một khóa học */
 @media (max-width: 768px) {
   .khoa-hoc-item {
-    flex: 0 1 100%; /* Đặt thành 100% khi màn hình nhỏ */
-    max-width: none; /* Bỏ giới hạn chiều rộng tối đa */
+    flex: 0 1 100%; /* Khi màn hình nhỏ, mỗi khóa học chiếm toàn bộ chiều rộng */
+    max-width: none; /* Loại bỏ giới hạn chiều rộng */
   }
 }
+
+
+
+
 
 /* Popular Course */
 .heading-section h4 {
@@ -12352,11 +12380,19 @@ textarea.form-control {
 }
 /* Infomation */
 .img-4 {
-  height: 300%;
-  border-radius: 30px;
+  display: center;
+  justify-content: center;
+  align-items: center;
   background-size: cover;
   background-position: center;
+  margin-top: 1px;
 }
+.img-4 {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16/9; 
+}
+
 
 /*------------------------------------------ChatBox ------------------------------ */
 .chatbox-container {
@@ -12467,7 +12503,16 @@ textarea.form-control {
   border-radius: 15px;
   cursor: pointer;
 }
+/*--------------------footer------------------*/
+.footer-icon {
+  display: inline-block;
+  margin-right: 10px; /* Khoảng cách giữa icon và text */
+  font-size: 20px; /* Kích thước của icon */
+}
 
+.footer-text {
+  font-size: 16px; /* Kích thước của văn bản */
+}
 
 
 

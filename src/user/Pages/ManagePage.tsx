@@ -8,7 +8,6 @@ const ManagePage: React.FC = () => {
     <>
       <ManageNav />
       <UserProfilePage />
-      
     </>
   );
 };

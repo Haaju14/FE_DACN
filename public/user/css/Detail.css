@@ -125,25 +125,7 @@ button.btn-secondary {
     transition: all 0.3s ease;
 }
   
-button.btn-secondary:hover {
-    background-color: #5a6268;
-}
-  
-button.btn-primary {
-    background-color: #82caff; /* Màu xanh nhẹ cho nút trả lời */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-  
-button.btn-primary:hover {
-    background-color: #6ab7d1; /* Xanh nhẹ khi hover */
-}
+
   
 /* Reply Section */
 .replies {

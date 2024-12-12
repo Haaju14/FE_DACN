@@ -33,15 +33,15 @@ interface User {
 interface Reply {
   IDReplyBinhLuan: number;
   NoiDung: string;
-  IDNguoiDung_NguoiDung: User; 
+  IDNguoiDung_NguoiDung: User;
 }
 
 interface BinhLuanData {
   IDKhoaHoc: number;
   IDBinhLuan: number;
   NoiDung: string;
-  IDNguoiDung_NguoiDung: User; 
-  replies?: Reply[]; 
+  IDNguoiDung_NguoiDung: User;
+  replies?: Reply[];
   showReply?: boolean;
 }
 
@@ -106,8 +106,8 @@ const Detail: React.FC = () => {
     }
   };
 
-  
-  
+
+
   const queryResultKhoaHocByID: UseQueryResult<KhoaHocData | undefined> =
     useQuery({
       queryKey: ["courseByIDApi", IDKhoaHoc || ""],
@@ -122,7 +122,7 @@ const Detail: React.FC = () => {
     }
   }, [IDKhoaHoc, token]);
 
-  
+
 
   if (queryResultKhoaHocByID.isLoading) {
     return <Loading />;
@@ -193,7 +193,7 @@ const Detail: React.FC = () => {
       message.error("Vui lòng nhập nội dung trả lời.");
       return;
     }
-  
+
     const replyData: BinhLuanData = {
       IDBinhLuan: 0,
       IDKhoaHoc: Number(IDKhoaHoc),
@@ -202,7 +202,7 @@ const Detail: React.FC = () => {
       ThoiGian: new Date().toISOString(),
       TenNguoiDung: userLogin.user.HoTen || "",
     };
-  
+
     try {
       await axios.post(
         `${BASE_URL}/binh-luan/reply/${parentCommentId}`,
@@ -211,7 +211,7 @@ const Detail: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-  
+
       message.success("Trả lời thành công!");
       setReplyContent((prev) => ({ ...prev, [parentCommentId]: "" }));
       getCommentsAPI(IDKhoaHoc, token);
@@ -220,7 +220,7 @@ const Detail: React.FC = () => {
       message.error("Đã xảy ra lỗi trong quá trình gửi trả lời.");
     }
   };
-  
+
   const toggleReply = (commentId: number) => {
     setComments((prevComments) =>
       prevComments.map((comment) =>
@@ -236,19 +236,19 @@ const Detail: React.FC = () => {
       message.error("Vui lòng chọn đánh giá và nhập nội dung nhận xét.");
       return;
     }
-  
+
     // Dữ liệu cần gửi đến API
     const feedbackData = {
       noiDung: feedbackContent, // Nội dung nhận xét
       xepLoai: rating,          // Đánh giá sao
     };
-  
+
     try {
       // Gửi yêu cầu POST đến backend để thêm nhận xét
       await axios.post(`${BASE_URL}/nhan-xet/add/${IDKhoaHoc}`, feedbackData, {
         headers: { Authorization: `Bearer ${token}` }, // Thêm token vào header
       });
-  
+
       message.success("Đánh giá thành công!");
       setFeedbackContent(""); // Reset nội dung nhận xét
       setRating(null); // Reset đánh giá sao
@@ -257,7 +257,7 @@ const Detail: React.FC = () => {
       message.error("Đã xảy ra lỗi trong quá trình gửi đánh giá.");
     }
   };
-  
+
 
   return (
     <section className="ftco-section">
@@ -277,18 +277,18 @@ const Detail: React.FC = () => {
               <div className="course-info mt-4">
                 <ul className="list-unstyled">
                   {[{
-                      title: "Mô tả khóa học",
-                      value: KhoaHocData.MoTaKhoaHoc || "Chưa có mô tả",
-                    },
-                    {
-                      title: "Số học viên",
-                      value: KhoaHocData.SoLuongHocVien || "0",
-                    },
-                    {
-                      title: "Giá khóa học",
-                      value: `${KhoaHocData.GiaTien} VND`,
-                    },
-                    { title: "Giảm giá", value: `${KhoaHocData.GiamGia}%` },
+                    title: "Mô tả khóa học",
+                    value: KhoaHocData.MoTaKhoaHoc || "Chưa có mô tả",
+                  },
+                  {
+                    title: "Số học viên",
+                    value: KhoaHocData.SoLuongHocVien || "0",
+                  },
+                  {
+                    title: "Giá khóa học",
+                    value: `${KhoaHocData.GiaTien} VND`,
+                  },
+                  { title: "Giảm giá", value: `${KhoaHocData.GiamGia}%` },
                   ].map((item, index) => (
                     <li
                       key={index}
@@ -307,7 +307,7 @@ const Detail: React.FC = () => {
                 </button>
               </div>
             </div>
-  
+
             {/* Bình luận và Đánh giá */}
             <div className="comments-section mt-5">
               <h4 className="mb-4">Bình luận</h4>
@@ -318,7 +318,7 @@ const Detail: React.FC = () => {
                 rows={3}
                 placeholder="Nhập bình luận..."
               />
-              <button onClick={handleSubmitComment} className="btn btn-primary">
+              <button onClick={handleSubmitComment} className="btn blue">
                 Gửi bình luận
               </button>
 
@@ -378,7 +378,7 @@ const Detail: React.FC = () => {
             </div>
 
           </div>
-  
+
           <div className="col-lg-4">
             {/* Đánh giá */}
             <div className="feedback-section">
@@ -412,7 +412,7 @@ const Detail: React.FC = () => {
         </div>
       </div>
     </section>
-  );  
+  );
 };
 
 export default Detail;

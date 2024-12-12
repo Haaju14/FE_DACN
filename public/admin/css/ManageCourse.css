@@ -19,7 +19,7 @@
 }
 
 /* Chỉnh sửa card khóa học */
-.course-card {
+.manage-courses-card {
   background-color: #fff;
   padding: 15px;
   margin-bottom: 20px;
@@ -31,49 +31,49 @@
 }
 
 /* Bên trái: ID và tên khóa học */
-.course-info {
+.manage-courses-info {
   display: flex;
   flex-direction: column;
 }
 
-.course-info .course-id {
+.manage-courses-info .manage-courses-id {
   font-weight: bold;
   color: #007bff;
 }
 
-.course-info .course-name {
+.manage-courses-info .manage-courses-name {
   font-size: 18px;
   font-weight: 600;
   margin-top: 10px;
 }
 
 /* Bên phải: Các nút chức năng */
-.course-actions {
+.manage-courses-actions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
 }
 
 /* Sửa style cho các button */
-.course-actions .ant-btn {
+.manage-courses-actions .ant-btn {
   border-radius: 4px;
   padding: 5px 10px;
 }
 
 /* Button chỉnh sửa */
-.course-actions .edit-button {
+.manage-courses-actions .manage-courses-edit-button {
   background-color: #f5a623;
   color: white;
 }
 
 /* Button xóa */
-.course-actions .delete-button {
+.manage-courses-actions .manage-courses-delete-button {
   background-color: #d9534f;
   color: white;
 }
 
 /* Button xem học viên */
-.course-actions .view-students-button {
+.manage-courses-actions .manage-courses-view-students-button {
   background-color: #5bc0de;
   color: white;
 }
@@ -94,7 +94,7 @@
   padding: 20px;
 }
 
-.card-student {
+.manage-courses-card-student {
   padding: 15px;
   border: 1px solid #ddd;
   margin-bottom: 10px;
@@ -102,7 +102,7 @@
   background-color: #f9f9f9;
 }
 
-.card-student strong {
+.manage-courses-card-student strong {
   font-size: 16px;
   color: #007bff;
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import '../../../public/user/css/style.css'
 
 const Footer: React.FC = () => {
   return (
@@ -10,7 +11,9 @@ const Footer: React.FC = () => {
             <div className="ftco-footer-widget mb-4">
               <h2 className="ftco-heading-2">H&H</h2>
               <p>
-                text 123891273981273982173
+              Chúng tôi cung cấp hàng ngàn khóa học đa dạng, từ cơ bản đến nâng cao, 
+              giúp bạn phát triển kỹ năng và theo đuổi đam mê.
+              Tham gia ngay để khám phá kiến thức mới và nâng tầm sự nghiệp của bạn!
               </p>
               <ul className="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
                 <li className="ftco-animate">
@@ -89,26 +92,27 @@ const Footer: React.FC = () => {
             <div className="ftco-footer-widget mb-4">
               <h2 className="ftco-heading-2">Have a Questions?</h2>
               <div className="block-23 mb-3">
-                <ul>
-                  <li>
-                    <span className="icon icon-map-marker" />
-                    <span className="text">
-                      6C Đ. Số 8, Linh Tây, Thủ Đức, Hồ Chí Minh 71310
-                    </span>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <span className="icon icon-phone" />
-                      <span className="text">+0961 051 014</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <span className="icon icon-envelope" />
-                      <span className="text">info@yourdomain.com</span>
-                    </a>
-                  </li>
-                </ul>
+              <ul>
+                <li>
+                  <span className="footer-icon icon-map-marker" />
+                  <span className="footer-text">
+                    Khu Công nghệ cao XL Hà Nội, Hiệp Phú, 
+                    Quận 9, Hồ Chí Minh, Việt Nam
+                  </span>
+                </li>
+                <li>
+                  <a href="#">
+                    <span className="footer-icon icon-phone" />
+                    <span className="footer-text">+84 2854452222</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <span className="footer-icon icon-envelope" />
+                    <span className="footer-text">Hutech@gmail.com</span>
+                  </a>
+                </li>
+              </ul>
               </div>
             </div>
           </div>
