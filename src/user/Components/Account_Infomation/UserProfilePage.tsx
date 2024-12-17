@@ -67,14 +67,10 @@ const UserProfilePage: React.FC = () => {
                 </div>
               </div>
               <hr />
-              <p className="text-muted">
+              {/* <p className="text-muted">
                 <strong>Lưu ý:</strong> Để thay đổi thông tin cá nhân, vui lòng
-<<<<<<< HEAD
                 sử dụng mục *Chỉnh sửa* hoặc mật khẩu *Đổi mật khẩu*.
-=======
-                sử dụng mục *Edit profile* hoặc thay đổi mật khẩu *Đổi mật khẩu* .
->>>>>>> 07e2d4585cb97c25c47f4c58ce3e6a54d0c34bc4
-              </p>
+              </p> */}
             </div>
           </div>
         </div>
