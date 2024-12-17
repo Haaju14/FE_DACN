@@ -122,28 +122,17 @@ const ChatApp: React.FC = () => {
       "sv-send-mess",
       ({ content, IDNguoiDung, RoomId: receivedRoomId, NgayGui }) => {
         if (receivedRoomId === roomId) {
-          setDataChat((prev) => [...prev, { content, IDNguoiDung, NgayGui }]);
+          setDataChat((prevChats) => [
+            ...prevChats,
+            {
+              Content: content,
+              IDNguoiDung: IDNguoiDung,
+              NgayGui: NgayGui,
+            },
+          ]);
         }
       }
     );
-
-    socket.on("send-message", (newMessage) => {
-      if (!newMessage || !newMessage.roomId || !newMessage.message) {
-        console.error("Tin nhắn nhận được không hợp lệ:", newMessage);
-        return;
-      }
-
-      if (newMessage.roomId === roomId) {
-        setDataChat((prevChats) => [
-          ...prevChats,
-          {
-            content: newMessage.message,
-            IDNguoiDung: newMessage.userId,
-            NgayGui: newMessage.NgayGui,
-          },
-        ]);
-      }
-    });
 
     return () => {
       socket.off("sv-send-mess");
