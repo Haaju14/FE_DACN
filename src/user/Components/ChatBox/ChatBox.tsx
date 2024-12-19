@@ -100,15 +100,20 @@ const ChatApp: React.FC = () => {
         const responseGiangVien = await axios.get(`${BASE_URL}/giangvien/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
+        const responseAdmin = await axios.get(`${BASE_URL}/admin`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const adminData = Array.isArray(responseAdmin.data.content)
+          ? responseAdmin.data.content
+          : [];
         const giangVienData = Array.isArray(responseGiangVien.data.content)
           ? responseGiangVien.data.content
           : [];
-        allUsers = giangVienData;
+          allUsers = [...adminData, ...giangVienData];
       }
 
       setUsers(allUsers);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -116,7 +121,7 @@ const ChatApp: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("connect", () => {});
+    socket.on("connect", () => { });
     // Lắng nghe tin nhắn từ socket
     socket.on(
       "sv-send-mess",
@@ -144,7 +149,7 @@ const ChatApp: React.FC = () => {
     setSidebarVisible(true);
   };
 
-  useEffect(() => {}, [sidebarVisible]);
+  useEffect(() => { }, [sidebarVisible]);
 
   const joinRoom = (selectedUser: any) => {
     const token = getToken();
@@ -153,34 +158,31 @@ const ChatApp: React.FC = () => {
     }
     const infoUser: any = jwtDecode(token);
 
-    // Kiểm tra xem thông tin người dùng đăng nhập có hợp lệ không
     if (!infoUser || !infoUser.data || !infoUser.data.id) {
       return;
     }
 
-    // Lấy ID của người đăng nhập và ID người dùng đã chọn
-    const currentUserID = infoUser.data.id; // ID người dùng đăng nhập
-    const selectedUserID = selectedUser.IDNguoiDung; // ID của người dùng trong danh sách chọn
+    const currentUserID = infoUser.data.id;
+    const selectedUserID = selectedUser.IDNguoiDung;
 
     if (!selectedUserID) {
       return;
     }
 
-    // Tạo roomId từ ID của người đăng nhập và người dùng đã chọn, luôn đảm bảo ID nhỏ hơn trước
     const newRoomId =
       currentUserID < selectedUserID
         ? `${currentUserID}-${selectedUserID}`
         : `${selectedUserID}-${currentUserID}`;
 
     console.log("Tham gia phòng:", newRoomId);
-    // Cập nhật roomId trong state và localStorage
     setRoomId(newRoomId);
     localStorage.setItem("roomId", newRoomId);
 
-    // Tham gia vào phòng chat với roomId vừa tạo
     socket.emit("join-room", newRoomId);
-    setSelectedUser(selectedUser);
+    setSelectedUser(selectedUser); // Lưu avatar và tên người chọn vào state
   };
+
+
 
   useEffect(() => {
     // Lắng nghe sự kiện "data-chat" từ server
@@ -201,89 +203,84 @@ const ChatApp: React.FC = () => {
   }, [dataChat]);
 
   return (
-    // <div className="chat-window">
     <div className="chat-app">
-      <button className="chat-icon" onClick={showChat}>
+      <button className="chatbox-toggle" onClick={showChat}>
         <i className="gg-chat" />
       </button>
 
       {sidebarVisible && (
-        <div className="sidebar show">
+        <div className="sidebar-panel show-sidebar">
           <button
-            className="sidebar-close"
+            className="sidebar-close-btn"
             onClick={() => setSidebarVisible(false)}
           >
             <strong>X</strong>
           </button>
 
-          <div className="sidebar-wrapper">
-            <div className="sidebar-content">
-              <div className="user-list">
-                {loading ? (
-                  <div>Đang tải...</div>
-                ) : (
-                  users.map((user) => {
-                    if (!user || !user.IDNguoiDung || !user.HoTen) return null;
-                    return (
-                      <div
-                        key={user.IDNguoiDung}
-                        onClick={() => joinRoom(user)}
-                        className="user-item"
-                      >
-                        <img
-                          src={user.AnhDaiDien || "default-avatar.jpg"}
-                          alt={user.HoTen}
-                          className="avatar"
-                        />
-                        <span>{user.HoTen}</span>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
+          <div className="sidebar-inner">
+            <div className="sidebar-user-list">
+              {loading ? (
+                <div>Đang tải...</div>
+              ) : (
+                users.map((user) => {
+                  if (!user || !user.IDNguoiDung || !user.HoTen) return null;
+                  return (
+                    <div
+                      key={user.IDNguoiDung}
+                      onClick={() => joinRoom(user)}
+                      className="sidebar-user-item"
+                    >
+                      <img
+                        src={user.AnhDaiDien || "default-avatar.jpg"}
+                        alt={user.HoTen}
+                        className="avatar"
+                      />
+                      <span>{user.HoTen}</span>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
       )}
 
       {selectedUser && (
-        <div className="chat-window">
-          <div className="chat-header">
-            <h3>{selectedUser.HoTen}</h3>
-            <button
-              onClick={() => setSelectedUser(null)}
-              className="close-chat"
-            >
+        <div className="chatbox-window">
+          <div className="chatbox-header">
+            <div className="chatbox-header-info">
+              {/* Hiển thị avatar và tên người dùng */}
+              <img
+                src={selectedUser.AnhDaiDien || "default-avatar.jpg"}
+                alt={selectedUser.HoTen}
+                style={{
+                  width: "30px",
+                  height: "30px",
+                  borderRadius: "50%",
+                  marginRight: "10px",  
+                }}
+              />
+              <h3>{selectedUser.HoTen}</h3>
+            </div>
+            <button onClick={() => setSelectedUser(null)} className="chatbox-close-btn">
               ×
             </button>
           </div>
 
-          <ol className="discussion" ref={discussionRef}>
+          <ol className="chat-messages" ref={discussionRef}>
             {dataChat.map((item, index) => {
               const token = getToken();
               if (!token) return null;
 
               const infoUser: any = jwtDecode(token);
+              const isCurrentUser = infoUser?.data?.id === item.IDNguoiDung;
 
               return (
                 <li
                   key={`${item.IDNguoiDung}-${index}`}
-                  className={
-                    infoUser?.data?.id === item.IDNguoiDung ? "self" : ""
-                  }
+                  className={isCurrentUser ? "self" : "other"} // Phân biệt giữa người gửi và đối phương
                 >
-                  <div className="avatar">
-                    <img
-                      src="https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"
-                      alt="User Avatar"
-                      style={{
-                        width: "25px",
-                        height: "25px",
-                        borderRadius: "50%",
-                      }}
-                    />
-                  </div>
-                  <div className="message-box">
+                  <div className={`message-box ${isCurrentUser ? "self" : "other"}`}>
                     <span>{item.Content}</span>
                   </div>
                 </li>
@@ -292,6 +289,7 @@ const ChatApp: React.FC = () => {
           </ol>
 
           <form
+            className="chatbox-form"
             onSubmit={(e) => {
               e.preventDefault();
               if (currentMessage.trim() !== "") {
@@ -302,13 +300,7 @@ const ChatApp: React.FC = () => {
 
                 const infoUser: any = jwtDecode(token);
 
-                // Kiểm tra thông tin người dùng hiện tại
-                if (
-                  !infoUser ||
-                  !infoUser.data ||
-                  !infoUser.data.id ||
-                  !roomId
-                ) {
+                if (!infoUser || !infoUser.data || !infoUser.data.id || !roomId) {
                   return;
                 }
 
@@ -322,33 +314,33 @@ const ChatApp: React.FC = () => {
                 };
                 console.log("Payload gửi tin nhắn:", newChat);
 
+                // Gửi tin nhắn qua socket
                 socket.emit("send-message", newChat);
 
-                setDataChat((prev) => [
-                  ...prev,
-                  {
-                    Content: currentMessage,
-                    IDNguoiDung: currentUserID,
-                    NgayGui: new Date().toISOString().slice(0, 10),
-                  },
-                ]);
-
+                // Sau khi gửi tin nhắn, reset lại giá trị currentMessage
                 setCurrentMessage("");
               }
             }}
           >
-            <input
-              type="text"
-              value={currentMessage}
-              onChange={(e) => setCurrentMessage(e.target.value)}
-              placeholder="Type a message"
-            />
-            <button type="submit">Send</button>
+            <div className="chatbox-input-wrapper">
+              <input
+                type="text"
+                value={currentMessage}
+                onChange={(e) => setCurrentMessage(e.target.value)}
+                placeholder="Type a message"
+                className="chatbox-input"
+              />
+            </div>
+            <div className="chatbox-send-btn-wrapper">
+              <button type="submit" className="send-message-btn">
+                Send
+              </button>
+            </div>
           </form>
         </div>
       )}
+
     </div>
-    // </div>
   );
 };
 

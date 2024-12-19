@@ -56,10 +56,10 @@ function App() {
             <Route path="/Payment" element={<PaymentPage />} />
             <Route path="/Cart" element={<CartPage />} />
           </Route>
-          <Route
+          {/* <Route
             path="/giangvien/:IDNguoiDung"
             element={<TeacherDetailPage />}
-          />
+          /> */}
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminTemplate />}>

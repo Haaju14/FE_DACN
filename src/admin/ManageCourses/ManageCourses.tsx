@@ -5,7 +5,7 @@ import { DeleteOutlined, EditOutlined, UsergroupAddOutlined } from "@ant-design/
 import { BASE_URL } from "../../util/fetchfromAPI";
 import "../../../public/admin/css/ManageCourse.css";
 import moment from "moment";
-const ManageCourses: React.FC = () => {
+const ManageCourses: React.FC = (ManageCoursesProps) => {
     const [courses, setCourses] = useState<any[]>([]);
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
     const [editCourse, setEditCourse] = useState<any>(null);
@@ -164,16 +164,15 @@ const ManageCourses: React.FC = () => {
                 IDDanhMuc: values.IDDanhMuc,
                 GiaTien: values.GiaTien,
                 IDKhuyenMai: values.IDKhuyenMai,
-                LuotXem: values.LuotXem || 0, // Nếu không có giá trị LuotXem, mặc định là 0
-                SoLuongHocVien: values.SoLuongHocVien || 0, // Nếu không có số học viên, mặc định là 0
-                GiamGia: values.GiamGia || 0, // Mặc định giảm giá là 0
-                LinkVideo: values.LinkVideo, // Đảm bảo có giá trị LinkVideo
+                LuotXem: values.LuotXem || 0,
+                SoLuongHocVien: values.SoLuongHocVien || 0,
+                GiamGia: values.GiamGia || 0,
+                LinkVideo: values.LinkVideo,
             };
 
-            // Kiểm tra tất cả các trường đã có giá trị
             console.log("Dữ liệu khóa học gửi đi:", courseData);
 
-            // Kiểm tra xem token có hợp lệ hay không
+            // Kiểm tra token
             const token = localStorage.getItem("token");
             if (!token) {
                 message.error("Vui lòng đăng nhập để thực hiện thao tác này.");
@@ -188,34 +187,39 @@ const ManageCourses: React.FC = () => {
             };
 
             let response;
-            // Kiểm tra nếu đang chỉnh sửa khóa học
             if (editCourse) {
                 // Cập nhật khóa học
-                response = await axios.put(`${BASE_URL}/khoa-hoc/put/${editCourse.IDKhoaHoc}`, courseData, config);
+                response = await axios.put(
+                    `${BASE_URL}/khoa-hoc/put/${editCourse.IDKhoaHoc}`,
+                    courseData,
+                    config
+                );
                 message.success("Cập nhật khóa học thành công.");
             } else {
                 // Tạo khóa học mới
-                response = await axios.post(`${BASE_URL}/khoa-hoc/add`, courseData, config);
-                console.log(response.data);
+                const newCourseData = {
+                    ...courseData,
+                    TrangThai: "chua_duyet",
+                    NgayGuiKiemDuyet: new Date().toISOString(),
+                };
+                response = await axios.post(`${BASE_URL}/khoa-hoc/add`, newCourseData, config);
                 message.success("Thêm khóa học thành công, chờ duyệt.");
             }
 
-            // Cập nhật danh sách khóa học sau khi thêm hoặc sửa
+            // Cập nhật danh sách khóa học
             fetchCourses();
 
             // Đóng modal sau khi hoàn thành
             setIsModalVisible(false);
         } catch (error) {
-            // Xử lý lỗi chi tiết từ backend
             if (error.response) {
-                console.error("Lỗi từ API:", error.response.data);
-                message.error(`Lỗi: ${error.response.data.message || 'Có lỗi xảy ra khi lưu khóa học'}`);
+                message.error(`Lỗi: ${error.response.data.message}`);
             } else {
-                console.error("Lỗi không xác định:", error);
                 message.error("Có lỗi xảy ra khi lưu khóa học.");
             }
         }
     };
+
 
 
 
@@ -317,7 +321,7 @@ const ManageCourses: React.FC = () => {
                     <Form.Item
                         label="Giảm giá"
                         name="GiamGia"
-                        rules={[{ required: true, message: "Vui lòng nhập mức giảm giá!" }]}
+                        rules={[{ required: false, message: "Vui lòng nhập mức giảm giá!" }]}
                     >
                         <Input />
                     </Form.Item>

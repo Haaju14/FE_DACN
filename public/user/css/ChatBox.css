@@ -25,30 +25,8 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-/* Nút đóng Sidebar */
-.sidebar-close-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 18px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  color: #333333;
-  transition: color 0.3s ease;
-  z-index: 1100;
-}
-
-.sidebar-close-btn:hover {
-  color: #0078ff; /* Màu nhấn khi hover */
-}
-
-/* Danh sách người dùng */
-.sidebar-user-list {
-  max-height: calc(100vh - 100px); /* Tối đa chiều cao */
   overflow-y: auto;
+  max-height: calc(100vh - 100px); /* Tối đa chiều cao */
   padding-right: 5px; /* Khoảng cách bên phải */
   scrollbar-width: thin; /* Cho Firefox */
   scrollbar-color: #d4d4d4 transparent; /* Tùy chỉnh thanh cuộn */
@@ -71,14 +49,12 @@
 .sidebar-user-item {
   display: flex;
   align-items: center;
-  padding: 2px 0px;
+  padding: 10px 0px;
   border-radius: 10px;
   transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng khi hover */
   cursor: pointer;
   background: #f9f9f9; 
-  
 }
-
 
 .sidebar-user-item:hover {
   background-color: #f0f4ff; /* Màu nhấn khi hover */
@@ -193,7 +169,6 @@
   color: #fff;
 }
 
-
 /* Cải thiện CSS để tách biệt các phần tử trong form */
 .chatbox-form {
   display: flex;
@@ -249,7 +224,6 @@
   background-color: #005bb5;
 }
 
-
 .chatbox-toggle {
   position: fixed;
   bottom: 20px;
@@ -273,4 +247,16 @@
 
 .chatbox-toggle:hover {
   background-color: #005bb5;
+}
+.chatbox-header-info {
+  display: flex;
+  align-items: center;  /* Căn giữa avatar và tên theo chiều dọc */
+}
+
+.chatbox-header-info img {
+  margin-right: 10px; /* Khoảng cách giữa avatar và tên */
+}
+
+.chatbox-header-info h3 {
+  margin: 0; /* Loại bỏ margin mặc định */
 }

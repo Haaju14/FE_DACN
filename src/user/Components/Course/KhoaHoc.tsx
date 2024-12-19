@@ -230,7 +230,7 @@ const KhoaHocComponent: React.FC = () => {
                                                     color: "#007bff",
                                                     fontWeight: "bold",
                                                     textTransform: "capitalize",
-                                                    marginBottom: "10px", 
+                                                    marginBottom: "10px",
                                                     marginTop: "5px",
                                                 }}
                                                 title={KhoaHoc.TenKhoaHoc}

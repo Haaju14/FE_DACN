@@ -1,26 +1,67 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { message as antdMessage } from "antd";
 import { RootState } from "../../../redux/store";
 import Profile from "./Profile";
+import axios from "axios";
+import { BASE_URL } from "../../../util/fetchfromAPI";
 
 const UserProfilePage: React.FC = () => {
+  const dispatch = useDispatch();
   const { userLogin } = useSelector((state: RootState) => state.userReducer);
+  const [showForm, setShowForm] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [avatar, setAvatar] = useState(userLogin?.user?.AnhDaiDien || "");
+
+  useEffect(() => {
+    setAvatar(userLogin?.user?.AnhDaiDien || "");
+  }, [userLogin]);
 
   if (!userLogin) {
     return <div>User is not logged in. Please log in to access this page.</div>;
   }
 
   const userData = { ...userLogin.user };
-  if (!userLogin) {
-    return (
-      <div className="user-profile-page container text-center mt-5">
-        <h2>Người dùng chưa đăng nhập</h2>
-        <p>Vui lòng đăng nhập để truy cập thông tin cá nhân của bạn.</p>
-      </div>
-    );
-  }
 
-  const { TenDangNhap, Email, HoTen, SDT, AnhDaiDien } = userLogin.user;
+  const handleAvatarChange = async () => {
+    if (urlInput.trim() === "") {
+      antdMessage.error("Vui lòng nhập URL hợp lệ.", 5);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.put(
+        `${BASE_URL}/user/profile`,
+        { AnhDaiDien: urlInput },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        antdMessage.success("Avatar đã được thay đổi thành công!", 5);
+        setShowForm(false);
+        setShowModal(false);
+        
+        setAvatar(urlInput);
+        
+        dispatch({ type: "UPDATE_USER_AVATAR", payload: urlInput });
+      } else {
+        antdMessage.error(response.data.message || "Đã xảy ra lỗi.", 5);
+      }
+    } catch (error) {
+      antdMessage.error(
+        axios.isAxiosError(error)
+          ? error.response?.data?.message || "Đã xảy ra lỗi từ server."
+          : "Đã xảy ra lỗi không xác định.",
+        5
+      );
+    }
+  };
 
   return (
     <div className="user-profile-page container mt-5">
@@ -29,18 +70,73 @@ const UserProfilePage: React.FC = () => {
         <div className="col-md-4">
           <div className="card text-center">
             <img
-              src={AnhDaiDien || "/default-avatar.png"}
+              src={avatar || "/default-avatar.png"}
               alt="Avatar"
               className="card-img-top rounded-circle mx-auto mt-3"
               style={{ width: "150px", height: "150px", objectFit: "cover" }}
             />
             <div className="card-body">
+              <button
+                className="btn btn-primary mt-3"
+                style={{ marginBottom: "5px" }}
+                onClick={() => setShowModal(true)}
+              >
+                Thay đổi avatar
+              </button>
               <Profile user={userData} />
             </div>
           </div>
-          
         </div>
-
+        {/* Modal hiển thị form nhập URL */}
+        {showModal && (
+          <div
+            className="modal-overlay"
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1000,
+            }}
+          >
+            <div
+              className="modal-content"
+              style={{
+                backgroundColor: "white",
+                padding: "20px",
+                borderRadius: "8px",
+                width: "400px",
+                textAlign: "center",
+              }}
+            >
+              <h5>Thay đổi avatar</h5>
+              <input
+                type="text"
+                className="form-control mt-3"
+                placeholder="Nhập URL avatar mới"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+              />
+              <button
+                className="btn btn-primary mt-3"
+                onClick={handleAvatarChange}
+              >
+                Thay đổi
+              </button>
+              <button
+                className="btn btn-primary mt-3"
+                onClick={() => setShowModal(false)}
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        )}
         {/* Thông tin chi tiết */}
         <div className="col-md-8">
           <div className="card">
@@ -51,26 +147,26 @@ const UserProfilePage: React.FC = () => {
               <div className="row">
                 <div className="col-md-6">
                   <p>
-                    <strong>Tên đăng nhập:</strong> {TenDangNhap}
+                    <strong>Tên đăng nhập:</strong> {userData.TenDangNhap}
                   </p>
                   <p>
-                    <strong>Email:</strong> {Email}
+                    <strong>Email:</strong> {userData.Email}
                   </p>
                 </div>
                 <div className="col-md-6">
                   <p>
-                    <strong>Họ và tên:</strong> {HoTen || "Chưa cập nhật"}
+                    <strong>Họ và tên:</strong> {userData.HoTen || "Chưa cập nhật"}
                   </p>
                   <p>
-                    <strong>Số điện thoại:</strong> {SDT || "Chưa cập nhật"}
+                    <strong>Số điện thoại:</strong> {userData.SDT || "Chưa cập nhật"}
                   </p>
                 </div>
               </div>
               <hr />
-              {/* <p className="text-muted">
+              <p className="text-muted">
                 <strong>Lưu ý:</strong> Để thay đổi thông tin cá nhân, vui lòng
-                sử dụng mục *Chỉnh sửa* hoặc mật khẩu *Đổi mật khẩu*.
-              </p> */}
+                sử dụng mục *Chỉnh sửa* hoặc *Đổi mật khẩu*.
+              </p>
             </div>
           </div>
         </div>

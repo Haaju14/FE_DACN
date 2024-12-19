@@ -1,0 +1,67 @@
+.teacher-item {
+    display: flex;
+    align-items: center; 
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    position: relative; 
+  }
+  
+  .teacher-item img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px; 
+  }
+  
+  .teacher-item .teacher-info {
+    display: flex;
+    flex-direction: column; 
+    justify-content: flex-start; 
+    flex: 1; 
+    gap: 20px; 
+  }
+  
+  /* Các thông tin chi tiết của giảng viên */
+  .teacher-item p {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0; 
+  }
+  
+  /* Tiêu đề giảng viên */
+  .teacher-item h3 {
+    font-size: 1.2rem;
+    color: #333;
+    font-weight: 600;
+    margin: 0;
+    margin-bottom: 10px;
+  }
+  
+  .follow-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    position: absolute;
+    top: 50%;
+    right: 10px; 
+    transform: translateY(-50%); 
+  }
+  
+  .follow-button .heart-icon {
+    font-size: 24px;
+    color: gray;
+  }
+  
+  .follow-button .followed .heart-icon {
+    color: red; 
+  }
+  

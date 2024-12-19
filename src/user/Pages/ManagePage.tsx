@@ -6,7 +6,7 @@ import UserProfilePage from "../Components/Account_Infomation/UserProfilePage";
 const ManagePage: React.FC = () => {
   return (
     <>
-      <ManageNav />
+      <ManageNav/>
       <UserProfilePage />
     </>
   );

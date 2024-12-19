@@ -29,37 +29,35 @@ const KhoaHocAll: React.FC = () => {
   const { navigate } = useRoute();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 6;
-
-  // Get the token from the Redux store or localStorage (based on your auth strategy)
   const token = useSelector((state: RootState) => state.userReducer.token); 
 
-  // Fetch KhoaHoc data using react-query
+  
   const fetchKhoaHoc = async () => {
     const response = await axios.get(`${BASE_URL}/khoa-hoc`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the Authorization header
+        Authorization: `Bearer ${token}`, 
       },
     });
-    return response.data.data; // Adjust this line based on the actual API response
+    return response.data.data; 
   };
 
   const { data: KhoaHocList = [], isLoading, isError } = useQuery<KhoaHocData[]>({
     queryKey: ["KhoaHoc"],
     queryFn: fetchKhoaHoc,
-    enabled: !!token, // Only run the query if the token exists
+    enabled: !!token, 
   });
 
-  // Check if data is loading
+  
   if (isLoading) {
     return <Loading />;
   }
 
-  // Check if there is an error
+  
   if (isError) {
     return <div>Error loading courses.</div>;
   }
 
-  // Calculate total and paginate
+  
   const total = KhoaHocList.length;
   const paginatedKhoaHoc = KhoaHocList.slice(
     (currentPage - 1) * pageSize,

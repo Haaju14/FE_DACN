@@ -55,18 +55,18 @@ const PaymentHistoryPage: React.FC = () => {
       title: "Số tiền",
       dataIndex: "TongTien",
       key: "TongTien",
-      render: (text: number) => `${text.toLocaleString()} đ`,
+      render: (text: number) => <span className="money-cell">{text.toLocaleString()}VND</span>,
     },
     {
       title: "Ngày thanh toán",
       dataIndex: "NgayThanhToan",
       key: "NgayThanhToan",
-      render: (date: string) => new Date(date).toLocaleString(),
+      render: (date: string) =><span className="date-cell">{new Date(date).toLocaleString()}</span>,
     },
   ];
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: "20px",}}>
       <h2>Lịch sử thanh toán</h2>
       {loading ? (
         <Spin tip="Đang tải dữ liệu..." />

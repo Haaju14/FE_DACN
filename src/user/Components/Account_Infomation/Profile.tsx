@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
+import { useDispatch } from "react-redux";
 import { BASE_URL } from "../../../util/fetchfromAPI";
 import axios from "axios";
 
@@ -16,12 +17,17 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = ({ user }) => {
+  const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false); // Modal cho đổi mật khẩu
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [notification, setNotification] = useState("");
   const [passwordNotification, setPasswordNotification] = useState("");
   const [userData, setUserData] = useState(user);
-  const [, setSelectedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    // Cập nhật lại userData khi thông tin người dùng thay đổi
+    setUserData(user);
+  }, [user]);
 
   const formik = useFormik({
     initialValues: {
@@ -50,17 +56,14 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
             },
           }
         );
-
-        setUserData({
-          ...userData,
-          TenDangNhap: response.data.TenDangNhap,
-          Email: response.data.Email,
-          HoTen: response.data.HoTen,
-          SDT: response.data.SDT,
-          AnhDaiDien: response.data.AnhDaiDien,
-        });
-
-        setNotification("Cập nhật thông tin cá nhân thành công, vui lòng đăng nhập lại để cập nhật thông tin!");
+  
+        
+        dispatch({ type: "UPDATE_USER_INFO", payload: response.data });
+  
+        
+        setUserData(response.data);
+  
+        setNotification("Cập nhật thông tin cá nhân thành công!");
         setShowModal(false);
       } catch (error) {
         console.error("Error updating user profile:", error);
@@ -68,6 +71,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
       }
     },
   });
+  
 
   const passwordFormik = useFormik({
     initialValues: {
@@ -77,7 +81,9 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
     },
     onSubmit: async (values) => {
       if (values.newPassword !== values.confirmPassword) {
-        setPasswordNotification("Mật khẩu mới và xác nhận mật khẩu không khớp.");
+        setPasswordNotification(
+          "Mật khẩu mới và xác nhận mật khẩu không khớp."
+        );
         return;
       }
 
@@ -96,8 +102,8 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
           }
         );
         setPasswordNotification("Đổi mật khẩu thành công!");
-        setTimeout(() => setPasswordNotification(""), 3000); 
-        setShowPasswordModal(false); 
+        setTimeout(() => setPasswordNotification(""), 3000);
+        setShowPasswordModal(false);
       } catch (error) {
         setPasswordNotification("Lỗi khi đổi mật khẩu!");
         console.error("Error changing password:", error);
@@ -105,30 +111,27 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
     },
   });
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.currentTarget.files && event.currentTarget.files[0]) {
-      const file = event.currentTarget.files[0];
-      setSelectedFile(file);
-    }
-  };
-
   return (
     <div>
-      
       {passwordNotification && (
         <div className="alert alert-success position-fixed top-0 start-50 translate-middle-x mt-3">
           {passwordNotification}
         </div>
       )}
       <div className="profile card p-3">
-        
         <div className="profile-info mt-3">
           <h2>Hello, I'm {userData.HoTen}</h2>
           <p>Join in 2024</p>
-          <button className="btn btn-outline-primary" onClick={() => setShowModal(true)}>
-            Edit profile
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowModal(true)}
+          >
+            Chỉnh sửa
           </button>
-          <button className="btn btn-outline-secondary ml-2" onClick={() => setShowPasswordModal(true)}>
+          <button
+            className="btn btn-primary ml-2"
+            onClick={() => setShowPasswordModal(true)}
+          >
             Đổi mật khẩu
           </button>
         </div>
@@ -138,13 +141,21 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
 
       {showModal && (
         <>
-          <div className="modal-backdrop" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}></div>
+          <div
+            className="modal-backdrop"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          ></div>
           <div className="modal fade show d-block" tabIndex={-1} role="dialog">
             <div className="modal-dialog" role="document">
               <div className="modal-content">
                 <div className="modal-header">
-                  <h5 className="modal-title">Edit Profile</h5>
-                  <button type="button" className="close" onClick={() => setShowModal(false)} aria-label="Close">
+                  <h5 className="modal-title">Chỉnh sửa</h5>
+                  <button
+                    type="button"
+                    className="close"
+                    onClick={() => setShowModal(false)}
+                    aria-label="Close"
+                  >
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -199,9 +210,15 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                       />
                     </div>
                     <div className="modal-footer">
-                      <button type="submit" className="btn btn-primary">Update</button>
-                      <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
-                        Cancel
+                      <button type="submit" className="btn btn-primary">
+                        Chỉnh sửa
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => setShowModal(false)}
+                      >
+                        Hủy
                       </button>
                     </div>
                   </form>
@@ -213,13 +230,20 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
       )}
 
       {showPasswordModal && (
-        
-        <div className="modal fade show d-block" style={{ display: "block" }}>
+        <div
+          className="modal fade show d-block"
+          style={{ display: "block" }}
+        >
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Đổi mật khẩu</h5>
-                <button type="button" className="close" onClick={() => setShowPasswordModal(false)} aria-label="Close">
+                <button
+                  type="button"
+                  className="close"
+                  onClick={() => setShowPasswordModal(false)}
+                  aria-label="Close"
+                >
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
@@ -255,10 +279,20 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                       value={passwordFormik.values.confirmPassword}
                     />
                   </div>
-                  {passwordNotification && <div className="alert alert-info">{passwordNotification}</div>}
+                  {passwordNotification && (
+                    <div className="alert alert-info">
+                      {passwordNotification}
+                    </div>
+                  )}
                   <div className="modal-footer">
-                    <button type="submit" className="btn btn-primary">Đổi mật khẩu</button>
-                    <button type="button" className="btn btn-secondary" onClick={() => setShowPasswordModal(false)}>
+                    <button type="submit" className="btn btn-primary">
+                      Đổi mật khẩu
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={() => setShowPasswordModal(false)}
+                    >
                       Hủy
                     </button>
                   </div>

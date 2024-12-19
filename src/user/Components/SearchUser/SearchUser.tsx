@@ -6,6 +6,7 @@ import { message } from "antd";
 import { BASE_URL } from "../../../util/fetchfromAPI";
 import Loading from "../Antd/Loading";
 import { HeartFilled, HeartOutlined } from "@ant-design/icons";
+import '../../../../public/user/css/Teacher.css'
 
 interface GiangVienData {
     IDNguoiDung: number;
@@ -35,7 +36,7 @@ const GiangVienComponent: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>(""); // Từ khóa tìm kiếm
     const [followedTeachers, setFollowedTeachers] = useState<number[]>([]);
     const navigate = useNavigate();
-    
+
     // Lấy token từ localStorage
     const getToken = () => localStorage.getItem("token");
 
@@ -47,7 +48,7 @@ const GiangVienComponent: React.FC = () => {
         });
         return data.content;
     };
-    
+
 
     // API theo dõi giảng viên
     const followTeacherAPI = async (id: number) => {
@@ -82,10 +83,7 @@ const GiangVienComponent: React.FC = () => {
     if (isError) {
         return <div>Error loading teachers.</div>;
     }
-    const handleViewTeacherDetails = (id: number) => {
-        navigate(`/giangvien/${id}`);
-    };
-    
+
     return (
         <section className="ftco-section bg-light">
             <div className="container">
@@ -109,48 +107,34 @@ const GiangVienComponent: React.FC = () => {
                     </div>
                     <div className="col-md-8">
                         <div className="teacher-list">
-                            <div className="row">
-                                {filteredTeachers.map((teacher) => (
-                                    <div className="col-md-4" key={teacher.IDNguoiDung}>
-                                        <div className="teacher-item">
-                                            <div
-                                                onClick={() => handleViewTeacherDetails(teacher.IDNguoiDung)}
-                                                style={{ cursor: "pointer" }}
-                                            >
-                                                <img
-                                                    src={teacher.AnhDaiDien}
-                                                    alt={teacher.HoTen}
-                                                    style={{ width: "100%", height: "auto", maxHeight: "200px" }}
-                                                />
-                                                <h3>{teacher.TenDangNhap}</h3>
-                                            </div>
-                                            <p>Email: {teacher.Email}</p>
-                                            <p>Giới tính: {teacher.GioiTinh}</p>
-                                            <p>Số điện thoại: {teacher.SDT}</p>
-                                            <button
-                                                className="follow-button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    followTeacherAPI(teacher.IDNguoiDung);
-                                                }}
-                                                style={{
-                                                    background: "none",
-                                                    border: "none",
-                                                    cursor: "pointer",
-                                                }}
-                                            >
-                                                {followedTeachers.includes(teacher.IDNguoiDung) ? (
-                                                    <HeartFilled style={{ color: "red", fontSize: "24px" }} />
-                                                ) : (
-                                                    <HeartOutlined style={{ color: "gray", fontSize: "24px" }} />
-                                                )}
-                                            </button>
-                                        </div>
+                            {filteredTeachers.map((teacher) => (
+                                <div className="teacher-item" key={teacher.IDNguoiDung}>
+                                    <img src={teacher.AnhDaiDien} alt={teacher.HoTen} />
+                                    <div className="teacher-info">
+                                        <h3>{teacher.TenDangNhap}</h3>
+                                        <p>Email: {teacher.Email}</p>
+                                        <p>Giới tính: {teacher.GioiTinh}</p>
+                                        <p>Số điện thoại: {teacher.SDT}</p>
                                     </div>
-                                ))}
-                            </div>
+                                    <button
+                                        className={`follow-button ${followedTeachers.includes(teacher.IDNguoiDung) ? "followed" : ""}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            followTeacherAPI(teacher.IDNguoiDung);
+                                        }}
+                                    >
+                                        {followedTeachers.includes(teacher.IDNguoiDung) ? (
+                                            <HeartFilled className="heart-icon" />
+                                        ) : (
+                                            <HeartOutlined className="heart-icon" />
+                                        )}
+                                    </button>
+                                </div>
+                            ))}
                         </div>
                     </div>
+
+
                 </div>
             </div>
         </section>

@@ -22,6 +22,10 @@ interface KhoaHocData {
   LoaiKhoaHoc: string;
   GiaTien: string;
   LinkVideo: string;
+  IDNguoiDung_NguoiDung?: NguoiDung;
+  IDDanhMuc_DanhMucKhoaHoc?: DanhMucKhoaHoc;
+  IDKhuyenMai_KhuyenMai?: KhuyenMai;
+  Hashtags?: Hashtag[];
 }
 
 interface User {
@@ -44,11 +48,25 @@ interface BinhLuanData {
   replies?: Reply[];
   showReply?: boolean;
 }
+interface NguoiDung {
+  IDNguoiDung: number;
+  HoTen: string;
+}
 
+interface DanhMucKhoaHoc {
+  IDDanhMuc: number;
+  TenDanhMuc: string;
+}
 
+interface KhuyenMai {
+  IDKhuyenMai: number;
+  TenKhuyenMai: string;
+}
 
-
-
+interface Hashtag {
+  IDHashTag: number;
+  HashTagName: string;
+}
 
 const Detail: React.FC = () => {
   const { id: IDKhoaHoc } = useParams();
@@ -56,13 +74,13 @@ const Detail: React.FC = () => {
     (state: RootState) => state.userReducer.userLogin
   );
   const token = localStorage.getItem("token");
-
   const [rating, setRating] = useState<string | null>(null);
   const [comment, setComment] = useState<string>("");
   const [feedbackContent, setFeedbackContent] = useState<string>("");
   const [replyContent, setReplyContent] = useState<{ [key: number]: string }>(
     {}
   );
+
   const [comments, setComments] = useState<BinhLuanData[]>([]);
   if (!token) {
     return <div>Please log in to view course details.</div>;
@@ -163,12 +181,16 @@ const Detail: React.FC = () => {
     try {
       const commentData: BinhLuanData = {
         IDBinhLuan: 0,
-        IDKhoaHoc: Number(IDKhoaHoc),
+        IDKhoaHoc: Number(IDKhoaHoc), 
         NoiDung: comment,
-        IDNguoiDung: userLogin.user.IDNguoiDung.toString(),
+        IDNguoiDung_NguoiDung: {
+          IDNguoiDung: userLogin.user.IDNguoiDung.toString(), 
+          HoTen: userLogin.user.HoTen || "",
+        },
         ThoiGian: new Date().toISOString(),
         TenNguoiDung: userLogin.user.HoTen || "",
       };
+      
 
       await axios.post(`${BASE_URL}/binh-luan/post/${IDKhoaHoc}`, commentData, {
         headers: { Authorization: `Bearer ${token}` },
@@ -268,45 +290,90 @@ const Detail: React.FC = () => {
               <h2 className="mb-4">
                 {KhoaHocData.TenKhoaHoc || "Tên khóa học không có"}
               </h2>
+
+              {/* Video giới thiệu khóa học */}
               <div className="single-slider owl-carousel mb-4">
                 <div
                   className="iframe-wrapper"
                   dangerouslySetInnerHTML={{ __html: KhoaHocData.LinkVideo }}
                 ></div>
               </div>
+
+              {/* Thông tin chi tiết khóa học */}
               <div className="course-info mt-4">
                 <ul className="list-unstyled">
-                  {[{
-                    title: "Mô tả khóa học",
-                    value: KhoaHocData.MoTaKhoaHoc || "Chưa có mô tả",
-                  },
-                  {
-                    title: "Số học viên",
-                    value: KhoaHocData.SoLuongHocVien || "0",
-                  },
-                  {
-                    title: "Giá khóa học",
-                    value: `${KhoaHocData.GiaTien} VND`,
-                  },
-                  { title: "Giảm giá", value: `${KhoaHocData.GiamGia}%` },
-                  ].map((item, index) => (
-                    <li
-                      key={index}
-                      className="d-flex justify-content-between align-items-center py-2"
-                    >
-                      <span>{item.title}</span>
-                      <span>{item.value}</span>
-                    </li>
-                  ))}
+                  {/* Mô tả khóa học */}
+                  <li className="d-flex justify-content-between align-items-center py-2">
+                    <span>Mô tả khóa học</span>
+                    <span>{KhoaHocData.MoTaKhoaHoc || "Chưa có mô tả"}</span>
+                  </li>
+
+                  {/* Số học viên */}
+                  <li className="d-flex justify-content-between align-items-center py-2">
+                    <span>Số lượng học viên</span>
+                    <span>{KhoaHocData.SoLuongHocVien || "0"}</span>
+                  </li>
+
+                  {/* Giá khóa học và Giảm giá */}
+                  <li className="d-flex justify-content-between align-items-center py-2">
+                    <span>Giá khóa học</span>
+                    <span>
+                      {parseFloat(KhoaHocData.GiamGia) > 0 ? (
+                        <>
+                          <span style={{ textDecoration: "line-through", color: "red" }}>
+                            {parseFloat(KhoaHocData.GiaTien).toFixed(0)} VND
+                          </span>
+                          {" "}
+                          <strong style={{ color: "green" }}>
+                            {(
+                              parseFloat(KhoaHocData.GiaTien) -
+                              (parseFloat(KhoaHocData.GiaTien) * parseFloat(KhoaHocData.GiamGia) / 100)
+                            ).toFixed(0)} VND
+                          </strong>
+                        </>
+                      ) : (
+                        <strong style={{ color: "green" }}>
+                          {parseFloat(KhoaHocData.GiaTien).toFixed(0)} VND
+                        </strong>
+                      )}
+                    </span>
+                  </li>
+
+                  {/* Danh mục khóa học */}
+                  <li className="d-flex justify-content-between align-items-center py-2">
+                    <span>Danh mục</span>
+                    <span>{KhoaHocData.IDDanhMuc_DanhMucKhoaHoc?.TenDanhMuc || "Chưa có danh mục"}</span>
+                  </li>
+
+                  {/* Khuyến mãi */}
+                  <li className="d-flex justify-content-between align-items-center py-2">
+                    <span>Khuyến mãi</span>
+                    <span>{KhoaHocData.IDKhuyenMai_KhuyenMai?.TenKhuyenMai || "Chưa có khuyến mãi"}</span>
+                  </li>
+
+                  {/* Giảng viên */}
+                  <li className="d-flex justify-content-between align-items-center py-2">
+                    <span>Giảng viên</span>
+                    <span>{KhoaHocData.IDNguoiDung_NguoiDung?.HoTen || "Chưa có giảng viên"}</span>
+                  </li>
+
+                  {/* Hashtags */}
+                  <li className="d-flex justify-content-between align-items-center py-2">
+                    <span>Hashtags</span>
+                    <span>{KhoaHocData.Hashtags?.map((hashtag) => hashtag.HashTagName).join(", ") || "Không có hashtags"}</span>
+                  </li>
                 </ul>
+
+                {/* Nút đăng ký khóa học */}
                 <button
                   onClick={handleRegisterCourse}
-                  className="btn btn-primary btn-lg"
+                  className="btn btn-primary btn-lg mt-3"
                 >
                   Đăng ký khóa học
                 </button>
               </div>
             </div>
+
 
             {/* Bình luận và Đánh giá */}
             <div className="comments-section mt-5">
