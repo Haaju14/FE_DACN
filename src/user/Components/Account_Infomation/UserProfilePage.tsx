@@ -5,6 +5,7 @@ import { RootState } from "../../../redux/store";
 import Profile from "./Profile";
 import axios from "axios";
 import { BASE_URL } from "../../../util/fetchfromAPI";
+import { login } from "../../../redux/reducers/userReducer"; // Import action login
 
 const UserProfilePage: React.FC = () => {
   const dispatch = useDispatch();
@@ -31,7 +32,12 @@ const UserProfilePage: React.FC = () => {
     }
 
     try {
-      const token = localStorage.getItem("token");
+      const token = userLogin.token;
+      if (!token) {
+        throw new Error("Token không hợp lệ");
+      }
+
+      // Gọi API để cập nhật avatar
       const response = await axios.put(
         `${BASE_URL}/user/profile`,
         { AnhDaiDien: urlInput },
@@ -46,10 +52,15 @@ const UserProfilePage: React.FC = () => {
         antdMessage.success("Avatar đã được thay đổi thành công!", 5);
         setShowForm(false);
         setShowModal(false);
-        
-        setAvatar(urlInput);
-        
-        dispatch({ type: "UPDATE_USER_AVATAR", payload: urlInput });
+
+        const updatedUser = {
+          ...userLogin.user,
+          AnhDaiDien: urlInput, // Cập nhật avatar mới
+        };
+
+        // Cập nhật Redux state và localStorage
+        dispatch(login({ user: updatedUser, token }));
+        setAvatar(urlInput); // Cập nhật hiển thị avatar
       } else {
         antdMessage.error(response.data.message || "Đã xảy ra lỗi.", 5);
       }
@@ -129,7 +140,7 @@ const UserProfilePage: React.FC = () => {
                 Thay đổi
               </button>
               <button
-                className="btn btn-primary mt-3"
+                className="btn btn-secondary mt-3"
                 onClick={() => setShowModal(false)}
               >
                 Hủy
@@ -140,7 +151,9 @@ const UserProfilePage: React.FC = () => {
         {/* Thông tin chi tiết */}
         <div className="col-md-8">
           <div className="card">
-            <div className="card-header bg-primary text-white">
+            <div
+              className="card-header bg-primary text-white d-flex justify-content-center"
+            >
               <h5>Thông tin chi tiết</h5>
             </div>
             <div className="card-body">

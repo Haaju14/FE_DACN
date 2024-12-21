@@ -59,10 +59,8 @@ const Register: React.FC = () => {
     setAvatar(file);
   };
 
-  // Hàm giả lập upload avatar
   const uploadAvatar = async (file: File): Promise<string> => {
-    // Thực tế, bạn sẽ upload file lên server và trả về URL
-    return "https://example.com/path/to/avatar.jpg"; // URL mẫu
+    return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpxzMJ80PmPGQIrDCKHeRwyW7nWreGvtR3ng&s";
   };
 
   const togglePasswordVisibility = () => {
@@ -144,6 +142,7 @@ const Register: React.FC = () => {
             onChange={handleChange}
           />
         </div>
+        
         <div className="form-group">
           <label htmlFor="registerPassword">Mật khẩu</label>
           <div className="input-group">
@@ -169,6 +168,7 @@ const Register: React.FC = () => {
             </div>
           </div>
         </div>
+
         <div className="form-group">
           <label htmlFor="registerFullName">Họ tên</label>
           <input

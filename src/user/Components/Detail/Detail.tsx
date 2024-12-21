@@ -346,10 +346,10 @@ const Detail: React.FC = () => {
                   </li>
 
                   {/* Khuyến mãi */}
-                  <li className="d-flex justify-content-between align-items-center py-2">
+                  {/* <li className="d-flex justify-content-between align-items-center py-2">
                     <span>Khuyến mãi</span>
                     <span>{KhoaHocData.IDKhuyenMai_KhuyenMai?.TenKhuyenMai || "Chưa có khuyến mãi"}</span>
-                  </li>
+                  </li> */}
 
                   {/* Giảng viên */}
                   <li className="d-flex justify-content-between align-items-center py-2">

@@ -25,7 +25,6 @@ const PaymentHistoryPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Lỗi khi lấy lịch sử thanh toán:", error);
-      message.error("Đã xảy ra lỗi. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }
@@ -40,33 +39,43 @@ const PaymentHistoryPage: React.FC = () => {
       title: "Mã thanh toán",
       dataIndex: "IDThanhToan",
       key: "IDThanhToan",
+      className: "align-left",
     },
     {
       title: "Phương thức",
       dataIndex: "PhuongThucThanhToan",
       key: "PhuongThucThanhToan",
+      className: "align-left",
     },
     {
       title: "Nội dung",
       dataIndex: "NoiDungThanhToan",
       key: "NoiDungThanhToan",
+      className: "align-left",
     },
     {
       title: "Số tiền",
       dataIndex: "TongTien",
       key: "TongTien",
-      render: (text: number) => <span className="money-cell">{text.toLocaleString()}VND</span>,
+      className: "align-left",
+      render: (text: number) => (
+        <span className="money-cell align-left">{text.toLocaleString()}VND</span>
+      ),
     },
     {
       title: "Ngày thanh toán",
       dataIndex: "NgayThanhToan",
       key: "NgayThanhToan",
-      render: (date: string) =><span className="date-cell">{new Date(date).toLocaleString()}</span>,
+      className: "align-left",
+      render: (date: string) => (
+        <span className="date-cell align-left">{new Date(date).toLocaleString()}</span>
+      ),
     },
   ];
 
+
   return (
-    <div style={{ padding: "20px",}}>
+    <div style={{ padding: "20px", }}>
       <h2>Lịch sử thanh toán</h2>
       {loading ? (
         <Spin tip="Đang tải dữ liệu..." />
@@ -77,6 +86,7 @@ const PaymentHistoryPage: React.FC = () => {
           rowKey="IDThanhToan"
           bordered
           pagination={{ pageSize: 10 }}
+          style={{ marginTop: 10 }}
         />
       )}
     </div>

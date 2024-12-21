@@ -8,14 +8,11 @@ import HomeTemplate from "./user/Templates/HomeTemplate";
 import HomePage from "./user/Pages/HomePage";
 import DetailPage from "./user/Pages/DetailPage";
 import DynamicResourceLoader from "./DynamicLoader.tsx";
-import ManagePage from "./user/Pages/ManagePage.tsx";
-
 import AdminTemplate from "./admin/templates/AdminTemplate";
 import NotFoundPage from "./pageGlobal/NotFoundPage.tsx";
 import KhoaHocPage from "./user/Pages/KhoaHocPage.tsx";
 import CoursesListPage from "./user/Pages/CoursesListPage.tsx";
 import SearchUserPage from "./user/Pages/SearchUserPage.tsx";
-import TeacherDetailPage from "./user/Pages/TeacherDetailPage.tsx";
 import ManageCourses from "./admin/ManageCourses/ManageCourses.tsx";
 import PaymentPage from "./user/Pages/PaymentPage.tsx";
 import CartPage from "./user/Pages/CartPage.tsx";
@@ -32,6 +29,7 @@ import ThongKe from "./admin/ThongKeDoanhThu/ThongKe.tsx";
 import Chatbox from "./user/Components/ChatBox/ChatBox.tsx";
 import HashTag from "./admin/ManageHashTag/HashTag.tsx";
 import Payment from "./admin/ManagePayment/Payment.tsx";
+import ManagePage from "./user/Pages/ManagePage.tsx";
 
 export const routeLink: any = createBrowserHistory();
 

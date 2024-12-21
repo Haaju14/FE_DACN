@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BASE_URL } from "../../../util/fetchfromAPI";
 import axios from "axios";
+import { RootState } from "../../../redux/store";
+import { login } from "../../../redux/reducers/userReducer";
 
 interface ProfileProps {
   user: {
@@ -23,24 +25,33 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
   const [notification, setNotification] = useState("");
   const [passwordNotification, setPasswordNotification] = useState("");
   const [userData, setUserData] = useState(user);
+  const [showPassword, setShowPassword] = useState(false);
+  const { userLogin } = useSelector((state: RootState) => state.userReducer);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
 
   useEffect(() => {
-    // Cập nhật lại userData khi thông tin người dùng thay đổi
-    setUserData(user);
-  }, [user]);
+    console.log("Redux state sau khi cập nhật:", userLogin);
+  }, [userLogin]);
 
   const formik = useFormik({
     initialValues: {
-      TenDangNhap: userData.TenDangNhap || "",
-      Email: userData.Email || "",
-      HoTen: userData.HoTen || "",
-      SDT: userData.SDT || "",
-      AnhDaiDien: userData.AnhDaiDien || "",
+      TenDangNhap: userLogin?.user.TenDangNhap || "",
+      Email: userLogin?.user.Email || "",
+      HoTen: userLogin?.user.HoTen || "",
+      SDT: userLogin?.user.SDT || "",
     },
     enableReinitialize: true,
     onSubmit: async (values) => {
       try {
-        const token = localStorage.getItem("token");
+        const token = userLogin?.token;
+        if (!token) {
+          throw new Error("Token không hợp lệ");
+        }
+
         const response = await axios.put(
           `${BASE_URL}/user/profile`,
           {
@@ -48,7 +59,6 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
             Email: values.Email,
             HoTen: values.HoTen,
             SDT: values.SDT,
-            AnhDaiDien: values.AnhDaiDien,
           },
           {
             headers: {
@@ -56,22 +66,35 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
             },
           }
         );
-  
-        
-        dispatch({ type: "UPDATE_USER_INFO", payload: response.data });
-  
-        
-        setUserData(response.data);
-  
-        setNotification("Cập nhật thông tin cá nhân thành công!");
-        setShowModal(false);
+
+        console.log("Dữ liệu trả về từ API:", response.data);
+
+        const userData = {
+          IDNguoiDung: response.data.content.IDNguoiDung,
+          TenDangNhap: response.data.content.TenDangNhap,
+          Email: response.data.content.Email,
+          HoTen: response.data.content.HoTen,
+          SDT: response.data.content.SDT,
+          Role: response.data.content.Role,
+          GioiTinh: response.data.content.GioiTinh,
+          AnhDaiDien: response.data.content.AnhDaiDien,
+        };
+
+        dispatch(login({ user: userData, token }));
+        setNotification("Cập nhật thông tin thành công!");
       } catch (error) {
-        console.error("Error updating user profile:", error);
+        console.error("Lỗi khi cập nhật thông tin:", error);
         setNotification("Lỗi khi cập nhật thông tin cá nhân!");
       }
     },
   });
-  
+
+  if (!userLogin) {
+    return <div>Đang tải thông tin...</div>;
+  }
+
+
+
 
   const passwordFormik = useFormik({
     initialValues: {
@@ -105,7 +128,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
         setTimeout(() => setPasswordNotification(""), 3000);
         setShowPasswordModal(false);
       } catch (error) {
-        setPasswordNotification("Lỗi khi đổi mật khẩu!");
+        setPasswordNotification("Mật khẩu cũ của bạn không chính xác!");
         console.error("Error changing password:", error);
       }
     },
@@ -252,7 +275,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                   <div className="form-group">
                     <label>Mật khẩu cũ</label>
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       className="form-control"
                       name="oldPassword"
                       onChange={passwordFormik.handleChange}
@@ -262,7 +285,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                   <div className="form-group">
                     <label>Mật khẩu mới</label>
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       className="form-control"
                       name="newPassword"
                       onChange={passwordFormik.handleChange}
@@ -272,12 +295,23 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                   <div className="form-group">
                     <label>Xác nhận mật khẩu mới</label>
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       className="form-control"
                       name="confirmPassword"
                       onChange={passwordFormik.handleChange}
                       value={passwordFormik.values.confirmPassword}
                     />
+                    <div className="input-group-append">
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={togglePasswordVisibility}
+                      >
+                        <i
+                          className={`fa ${showPassword ? "fa-eye" : "fa-eye-slash"}`}
+                        ></i>
+                      </button>
+                    </div>
                   </div>
                   {passwordNotification && (
                     <div className="alert alert-info">

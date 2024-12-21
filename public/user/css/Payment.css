@@ -131,3 +131,10 @@
   color: #1890ff;
   font-size: 14px;
 }
+.align-left {
+  text-align: left !important;
+}
+.money-cell,
+.date-cell {
+  text-align: left !important;
+}

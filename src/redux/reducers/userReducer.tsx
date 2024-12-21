@@ -38,18 +38,24 @@ const authReducer = createSlice({
   initialState,
   reducers: {
     login: (state, action: PayloadAction<UserLogin>) => {
-      // Cập nhật thông tin người dùng và token
-      state.userLogin = action.payload; // Cập nhật userLogin
-      state.token = action.payload.token; // Cập nhật token
-      // Lưu thông tin vào localStorage nếu cần
+      console.log("Reducer login nhận dữ liệu:", action.payload);
+      if (!action.payload || !action.payload.user) {
+        console.error("Dữ liệu không hợp lệ:", action.payload);
+        return;
+      }
+      state.userLogin = action.payload;
+      state.token = action.payload.token;
       localStorage.setItem(USER_LOGIN, JSON.stringify(action.payload));
     },
+    
     logout: (state) => {
+      console.log("Logout reducer được gọi!"); // Kiểm tra xem logout có vô tình bị gọi không
       state.userLogin = null;
-      state.token = undefined; // Xóa token khi logout
+      state.token = undefined;
       removeDataTextStorage(USER_LOGIN);
       removeDataJsonStorage(USER_LOGIN);
     },
+
   },
 });
 

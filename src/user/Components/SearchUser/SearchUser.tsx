@@ -89,7 +89,7 @@ const GiangVienComponent: React.FC = () => {
             <div className="container">
                 <div className="row">
                     <div className="col-lg-3 custom-sidebar">
-                        <div className="sidebar-wrap bg-light ftco-animate">
+                        <div className="custom-sidebar-wrap bg-light ftco-animate">
                             <form action="#">
                                 <div className="fields">
                                     <div className="form-group">

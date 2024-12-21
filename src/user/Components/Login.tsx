@@ -89,7 +89,7 @@ const Login: React.FC = () => {
           if (user.Role === "admin" || user.Role === "giangvien") {
             navigate("/");
           } else {
-            setMessage("Login successful!");
+            setMessage("Đăng nhập thành công!");
             navigate("/");
           }
 
