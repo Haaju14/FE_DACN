@@ -7,7 +7,16 @@ import { jwtDecode } from "jwt-decode";
 import { useRef } from "react";
 
 const socket = io("ws://localhost:8081");
-
+interface CourseRoom {
+  HinhAnh: string;
+  IDKhoaHoc: string;
+  TenKhoaHoc: string;
+  RoomId: string;
+  GiangVien: {
+    HoTen: string;
+    AnhDaiDien?: string;
+  };
+}
 const ChatApp: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
@@ -19,11 +28,48 @@ const ChatApp: React.FC = () => {
 
   const [dataChat, setDataChat] = useState<any[]>([]);
   const [roomId, setRoomId] = useState<string | null>(null);
-
+  const [isCourseChat, setIsCourseChat] = useState(false); //add mới
   const discussionRef = useRef<HTMLOListElement | null>(null);
 
   const getToken = () => localStorage.getItem("token");
+  // Hàm join vào room chat của khóa học (mới)
+  const joinCourseRoom = async (course: CourseRoom) => {
+    const token = getToken();
+    if (!token) return;
 
+    try {
+      // Thêm listener tạm thời cho lỗi
+      const errorHandler = (errorMsg: string) => {
+        alert(errorMsg);
+        socket.off("join-error", errorHandler);
+      };
+      socket.on("join-error", errorHandler);
+
+      // Gửi yêu cầu tham gia phòng với ID khóa học
+      socket.emit("join-rooms", course.IDKhoaHoc);
+
+      // Sử dụng RoomId từ props nếu có
+      const finalRoomId = course.RoomId;
+      if (!finalRoomId) throw new Error("Không xác định được RoomId");
+
+      setRoomId(finalRoomId);
+      localStorage.setItem("roomId", finalRoomId);
+      setIsCourseChat(true);
+
+      setSelectedUser({
+        IDKhoaHoc: course.IDKhoaHoc,
+        HoTen: course.TenKhoaHoc,
+        AnhDaiDien: course.HinhAnh || "default-course.jpg",
+        GiangVien: course.GiangVien,
+      });
+
+      // Xóa listener sau 5s
+      setTimeout(() => socket.off("join-error", errorHandler), 5000);
+    } catch (error) {
+      console.error("Lỗi khi tham gia phòng học:", error);
+      alert("Không thể tham gia phòng chat. Vui lòng thử lại sau.");
+    }
+  };
   const decodeUser = () => {
     const token = getToken();
     if (token) {
@@ -109,7 +155,7 @@ const ChatApp: React.FC = () => {
         const giangVienData = Array.isArray(responseGiangVien.data.content)
           ? responseGiangVien.data.content
           : [];
-          allUsers = [...adminData, ...giangVienData];
+        allUsers = [...adminData, ...giangVienData];
       }
 
       setUsers(allUsers);
@@ -257,7 +303,7 @@ const ChatApp: React.FC = () => {
                   width: "30px",
                   height: "30px",
                   borderRadius: "50%",
-                  marginRight: "10px",  
+                  marginRight: "10px",
                 }}
               />
               <h3>{selectedUser.HoTen}</h3>
