@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { useRef } from "react";
 
 const socket = io("ws://localhost:8081");
+
 interface CourseRoom {
   HinhAnh: string;
   IDKhoaHoc: string;
@@ -17,21 +18,46 @@ interface CourseRoom {
     AnhDaiDien?: string;
   };
 }
+
+interface GiangVien {
+  IDNguoiDung: string;
+  HoTen: string;
+  AnhDaiDien?: string;
+}
+
 const ChatApp: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [currentMessage, setCurrentMessage] = useState<string>("");
-
   const [loading, setLoading] = useState<boolean>(false);
   const [sidebarVisible, setSidebarVisible] = useState<boolean>(false);
-
   const [dataChat, setDataChat] = useState<any[]>([]);
   const [roomId, setRoomId] = useState<string | null>(null);
-  const [isCourseChat, setIsCourseChat] = useState(false); //add mới
   const discussionRef = useRef<HTMLOListElement | null>(null);
-
   const getToken = () => localStorage.getItem("token");
+  const [courseRooms, setCourseRooms] = useState<CourseRoom[]>([]);
+  const [activeTab, setActiveTab] = useState<"users" | "courses">("users");
+  const [isCourseChat, setIsCourseChat] = useState(false); //add mới
+
+  // Hàm fetch danh sách khóa học đã đăng ký (mới)
+  const fetchRegisteredCourses = async () => {
+    try {
+      const token = getToken();
+      if (!token) return;
+
+      const response = await axios.get(`${BASE_URL}/khoa-hoc-dang-ky`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.data && response.data.content) {
+        setCourseRooms(response.data.content);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách khóa học:", error);
+    }
+  };
+
   // Hàm join vào room chat của khóa học (mới)
   const joinCourseRoom = async (course: CourseRoom) => {
     const token = getToken();
@@ -91,31 +117,10 @@ const ChatApp: React.FC = () => {
     setCurrentMessage("");
   };
 
-  // form gửi tin nhắn (MỚI)
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (currentMessage.trim() === "" || !roomId) return;
-
-    if (isCourseChat) {
-      sendCourseMessage();
-    } else {
-      const token = getToken();
-      if (!token) return;
-
-      const infoUser: any = jwtDecode(token);
-      if (!infoUser?.data?.id) return;
-
-      const newChat = {
-        IDNguoiDung: infoUser.data.id,
-        Content: currentMessage,
-        RoomId: roomId,
-        NgayGui: new Date().toISOString(),
-      };
-
-      socket.emit("send-message", newChat);
-      setCurrentMessage("");
-    }
-  };
+  useEffect(() => {
+    fetchRegisteredCourses();
+    fetchUsers();
+  }, []);
 
   const decodeUser = () => {
     const token = getToken();
@@ -206,15 +211,16 @@ const ChatApp: React.FC = () => {
       }
 
       setUsers(allUsers);
-    } catch (error) { }
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách người dùng:", error);
+    }
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    socket.on("connect", () => {
+      console.log("Connected to socket server");
+    });
 
-  useEffect(() => {
-    socket.on("connect", () => { });
     // Lắng nghe tin nhắn từ socket
     socket.on(
       "sv-send-mess",
@@ -224,17 +230,22 @@ const ChatApp: React.FC = () => {
             ...prevChats,
             {
               Content: content,
-              IDNguoiDung: IDNguoiDung,
-              NgayGui: NgayGui,
+              IDNguoiDung,
+              NgayGui,
             },
           ]);
         }
       }
     );
 
+    // Lắng nghe dữ liệu chat khi join room
+    socket.on("data-chat", (data) => {
+      setDataChat(data);
+    });
+
     return () => {
       socket.off("sv-send-mess");
-      socket.off("send-message");
+      socket.off("data-chat");
     };
   }, [roomId]);
 
@@ -242,58 +253,61 @@ const ChatApp: React.FC = () => {
     setSidebarVisible(true);
   };
 
-  useEffect(() => { }, [sidebarVisible]);
-
   const joinRoom = (selectedUser: any) => {
     const token = getToken();
-    if (!token) {
-      return;
-    }
-    const infoUser: any = jwtDecode(token);
+    if (!token) return;
 
-    if (!infoUser || !infoUser.data || !infoUser.data.id) {
-      return;
-    }
+    const infoUser: any = jwtDecode(token);
+    if (!infoUser?.data?.id) return;
 
     const currentUserID = infoUser.data.id;
     const selectedUserID = selectedUser.IDNguoiDung;
 
-    if (!selectedUserID) {
-      return;
-    }
+    if (!selectedUserID) return;
 
     const newRoomId =
       currentUserID < selectedUserID
         ? `${currentUserID}-${selectedUserID}`
         : `${selectedUserID}-${currentUserID}`;
 
-    console.log("Tham gia phòng:", newRoomId);
     setRoomId(newRoomId);
     localStorage.setItem("roomId", newRoomId);
 
     socket.emit("join-room", newRoomId);
-    setSelectedUser(selectedUser); // Lưu avatar và tên người chọn vào state
+    setSelectedUser(selectedUser);
   };
-
-
-
-  useEffect(() => {
-    // Lắng nghe sự kiện "data-chat" từ server
-    socket.on("data-chat", (data) => {
-      setDataChat(data); // Cập nhật lại dữ liệu chat trong state
-    });
-
-    // Cleanup listener khi component unmount
-    return () => {
-      socket.off("data-chat");
-    };
-  }, []);
 
   useEffect(() => {
     if (discussionRef.current) {
       discussionRef.current.scrollTop = discussionRef.current.scrollHeight;
     }
   }, [dataChat]);
+
+  // form gửi tin nhắn (MỚI)
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (currentMessage.trim() === "" || !roomId) return;
+
+    if (isCourseChat) {
+      sendCourseMessage();
+    } else {
+      const token = getToken();
+      if (!token) return;
+
+      const infoUser: any = jwtDecode(token);
+      if (!infoUser?.data?.id) return;
+
+      const newChat = {
+        IDNguoiDung: infoUser.data.id,
+        Content: currentMessage,
+        RoomId: roomId,
+        NgayGui: new Date().toISOString(),
+      };
+
+      socket.emit("send-message", newChat);
+      setCurrentMessage("");
+    }
+  };
 
   return (
     <div className="chat-app">
@@ -311,27 +325,65 @@ const ChatApp: React.FC = () => {
           </button>
 
           <div className="sidebar-inner">
+            <div className="sidebar-tabs">
+              <button
+                className={activeTab === "users" ? "active" : ""}
+                onClick={() => setActiveTab("users")}
+              >
+                Người dùng
+              </button>
+              <button
+                className={activeTab === "courses" ? "active" : ""}
+                onClick={() => setActiveTab("courses")}
+              >
+                Khóa học của tôi
+              </button>
+            </div>
+
             <div className="sidebar-user-list">
               {loading ? (
                 <div>Đang tải...</div>
+              ) : activeTab === "users" ? (
+                users.map((user) => (
+                  <div
+                    key={user.IDNguoiDung}
+                    onClick={() => joinRoom(user)}
+                    className="sidebar-user-item"
+                  >
+                    <img
+                      src={user.AnhDaiDien || "default-avatar.jpg"}
+                      alt={user.HoTen}
+                      className="avatar"
+                    />
+                    <span>{user.HoTen}</span>
+                  </div>
+                ))
               ) : (
-                users.map((user) => {
-                  if (!user || !user.IDNguoiDung || !user.HoTen) return null;
-                  return (
-                    <div
-                      key={user.IDNguoiDung}
-                      onClick={() => joinRoom(user)}
-                      className="sidebar-user-item"
-                    >
-                      <img
-                        src={user.AnhDaiDien || "default-avatar.jpg"}
-                        alt={user.HoTen}
-                        className="avatar"
-                      />
-                      <span>{user.HoTen}</span>
+                courseRooms.map((course) => (
+                  <div
+                    key={`course-${course.IDKhoaHoc}`}
+                    onClick={() => joinCourseRoom(course)}
+                    className="sidebar-user-item course-item"
+                  >
+                    <img
+                      src={course.HinhAnh || "default-course.jpg"}
+                      alt={course.TenKhoaHoc}
+                      className="avatar"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "default-course.jpg";
+                      }}
+                    />
+                    <div className="course-info">
+                      <span className="course-title">{course.TenKhoaHoc}</span>
+                      {course.GiangVien && (
+                        <small className="instructor-name">
+                          Giảng viên: {course.GiangVien.HoTen}
+                        </small>
+                      )}
                     </div>
-                  );
-                })
+                  </div>
+                ))
               )}
             </div>
           </div>
@@ -342,20 +394,44 @@ const ChatApp: React.FC = () => {
         <div className="chatbox-window">
           <div className="chatbox-header">
             <div className="chatbox-header-info">
-              {/* Hiển thị avatar và tên người dùng */}
               <img
-                src={selectedUser.AnhDaiDien || "default-avatar.jpg"}
+                src={
+                  selectedUser.AnhDaiDien ||
+                  (selectedUser.IDKhoaHoc
+                    ? "default-course.jpg"
+                    : "default-avatar.jpg")
+                }
                 alt={selectedUser.HoTen}
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "50%",
-                  marginRight: "10px",
+                className="chatbox-avatar"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = selectedUser.IDKhoaHoc
+                    ? "default-course.jpg"
+                    : "default-avatar.jpg";
                 }}
               />
-              <h3>{selectedUser.HoTen}</h3>
+              <div className="chatbox-user-info">
+                <h3 className="chatbox-username">{selectedUser.HoTen}</h3>
+                {selectedUser.GiangVien && (
+                  <small className="chatbox-instructor">
+                    Giảng viên: {selectedUser.GiangVien.HoTen}
+                  </small>
+                )}
+                {isCourseChat && (
+                  <small className="chatbox-type">Nhóm khóa học</small>
+                )}
+              </div>
             </div>
-            <button onClick={() => setSelectedUser(null)} className="chatbox-close-btn">
+            <button
+              onClick={() => {
+                setSelectedUser(null);
+                setRoomId(null);
+                setIsCourseChat(false);
+                localStorage.removeItem("roomId");
+              }}
+              className="chatbox-close-btn"
+              aria-label="Đóng chat"
+            >
               ×
             </button>
           </div>
@@ -371,68 +447,53 @@ const ChatApp: React.FC = () => {
               return (
                 <li
                   key={`${item.IDNguoiDung}-${index}`}
-                  className={isCurrentUser ? "self" : "other"} // Phân biệt giữa người gửi và đối phương
+                  className={isCurrentUser ? "self" : "other"}
                 >
-                  <div className={`message-box ${isCurrentUser ? "self" : "other"}`}>
+                  {!isCurrentUser && !isCourseChat && (
+                    <img
+                      src={item.AnhDaiDien || "default-avatar.jpg"}
+                      alt="Avatar"
+                      className="message-avatar"
+                    />
+                  )}
+                  <div
+                    className={`message-box ${
+                      isCurrentUser ? "self" : "other"
+                    }`}
+                  >
+                    {!isCurrentUser && isCourseChat && (
+                      <div className="message-sender">
+                        {item.HoTen || "Người dùng"}
+                      </div>
+                    )}
                     <span>{item.Content}</span>
+                    <div className="message-time">
+                      {new Date(item.NgayGui).toLocaleTimeString()}
+                    </div>
                   </div>
                 </li>
               );
             })}
           </ol>
 
-          <form
-            className="chatbox-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (currentMessage.trim() !== "") {
-                const token = getToken();
-                if (!token) {
-                  return;
-                }
-
-                const infoUser: any = jwtDecode(token);
-
-                if (!infoUser || !infoUser.data || !infoUser.data.id || !roomId) {
-                  return;
-                }
-
-                const currentUserID = infoUser.data.id;
-
-                const newChat = {
-                  IDNguoiDung: currentUserID,
-                  Content: currentMessage,
-                  RoomId: roomId,
-                  NgayGui: new Date().toISOString().slice(0, 10),
-                };
-                console.log("Payload gửi tin nhắn:", newChat);
-
-                // Gửi tin nhắn qua socket
-                socket.emit("send-message", newChat);
-
-                // Sau khi gửi tin nhắn, reset lại giá trị currentMessage
-                setCurrentMessage("");
-              }
-            }}
-          >
+          <form className="chatbox-form" onSubmit={handleSubmit}>
             <div className="chatbox-input-wrapper">
               <input
                 type="text"
                 value={currentMessage}
                 onChange={(e) => setCurrentMessage(e.target.value)}
-                placeholder="Type a message"
+                placeholder="Nhập tin nhắn..."
                 className="chatbox-input"
               />
             </div>
             <div className="chatbox-send-btn-wrapper">
               <button type="submit" className="send-message-btn">
-                Send
+                Gửi
               </button>
             </div>
           </form>
         </div>
       )}
-
     </div>
   );
 };
