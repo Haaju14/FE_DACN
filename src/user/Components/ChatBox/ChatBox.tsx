@@ -70,6 +70,53 @@ const ChatApp: React.FC = () => {
       alert("Không thể tham gia phòng chat. Vui lòng thử lại sau.");
     }
   };
+
+  // Hàm gửi tin nhắn nhóm (MỚI)
+  const sendCourseMessage = () => {
+    if (!currentMessage.trim() || !selectedUser?.IDKhoaHoc || !roomId) return;
+
+    const token = getToken();
+    if (!token) return;
+
+    const userInfo = decodeUser();
+    if (!userInfo?.data?.id) return;
+
+    socket.emit("send-course-message", {
+      IDNguoiDung: userInfo.data.id,
+      Content: currentMessage,
+      RoomId: roomId,
+      NgayGui: new Date().toISOString(),
+    });
+
+    setCurrentMessage("");
+  };
+
+  // form gửi tin nhắn (MỚI)
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (currentMessage.trim() === "" || !roomId) return;
+
+    if (isCourseChat) {
+      sendCourseMessage();
+    } else {
+      const token = getToken();
+      if (!token) return;
+
+      const infoUser: any = jwtDecode(token);
+      if (!infoUser?.data?.id) return;
+
+      const newChat = {
+        IDNguoiDung: infoUser.data.id,
+        Content: currentMessage,
+        RoomId: roomId,
+        NgayGui: new Date().toISOString(),
+      };
+
+      socket.emit("send-message", newChat);
+      setCurrentMessage("");
+    }
+  };
+
   const decodeUser = () => {
     const token = getToken();
     if (token) {
