@@ -447,7 +447,9 @@ const ChatApp: React.FC = () => {
                   >
                     {!isCurrentUser && isCourseChat && (
                       <div className="message-sender">
-                        {item.HoTen || "Người dùng"}
+                        {item.HoTen ||
+                          users.find(u => u.IDNguoiDung === item.IDNguoiDung)?.HoTen ||
+                          "Thành viên"}
                       </div>
                     )}
                     <span>{item.Content}</span>
