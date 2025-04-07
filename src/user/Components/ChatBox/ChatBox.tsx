@@ -363,7 +363,7 @@ const ChatApp: React.FC = () => {
                   <div
                     key={`course-${course.IDKhoaHoc}`}
                     onClick={() => joinCourseRoom(course)}
-                    className="sidebar-user-item course-item"
+                    className="sidebar-user-item"
                   >
                     <img
                       src={course.HinhAnh || "default-course.jpg"}
@@ -374,13 +374,8 @@ const ChatApp: React.FC = () => {
                         target.src = "default-course.jpg";
                       }}
                     />
-                    <div className="course-info">
-                      <span className="course-title">{course.TenKhoaHoc}</span>
-                      {course.GiangVien && (
-                        <small className="instructor-name">
-                          Giảng viên: {course.GiangVien.HoTen}
-                        </small>
-                      )}
+                    <div className="chatbox-user-info">
+                      <small className="chatbox-username">{course.TenKhoaHoc}</small>
                     </div>
                   </div>
                 ))
@@ -395,30 +390,20 @@ const ChatApp: React.FC = () => {
           <div className="chatbox-header">
             <div className="chatbox-header-info">
               <img
-                src={
-                  selectedUser.AnhDaiDien ||
-                  (selectedUser.IDKhoaHoc
-                    ? "default-course.jpg"
-                    : "default-avatar.jpg")
-                }
+                src={selectedUser.AnhDaiDien ||
+                  (selectedUser.IDKhoaHoc ? "default-course.jpg" : "default-avatar.jpg")}
                 alt={selectedUser.HoTen}
                 className="chatbox-avatar"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = selectedUser.IDKhoaHoc
-                    ? "default-course.jpg"
-                    : "default-avatar.jpg";
-                }}
               />
               <div className="chatbox-user-info">
                 <h3 className="chatbox-username">{selectedUser.HoTen}</h3>
                 {selectedUser.GiangVien && (
-                  <small className="chatbox-instructor">
+                  <small className="chatbox-user-detail">
                     Giảng viên: {selectedUser.GiangVien.HoTen}
                   </small>
                 )}
                 {isCourseChat && (
-                  <small className="chatbox-type">Nhóm khóa học</small>
+                  <span className="chatbox-user-detail">Nhóm khóa học</span>
                 )}
               </div>
             </div>
@@ -457,9 +442,8 @@ const ChatApp: React.FC = () => {
                     />
                   )}
                   <div
-                    className={`message-box ${
-                      isCurrentUser ? "self" : "other"
-                    }`}
+                    className={`message-box ${isCurrentUser ? "self" : "other"
+                      }`}
                   >
                     {!isCurrentUser && isCourseChat && (
                       <div className="message-sender">

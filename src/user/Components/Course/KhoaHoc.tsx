@@ -38,11 +38,18 @@ const KhoaHocComponent: React.FC = () => {
     };
 
     const fetchFavoriteCoursesAPI = async () => {
-        const token = localStorage.getItem("token");
-        const { data } = await axios.get(`${BASE_URL}/favorites`, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-        return data.content.map((item: { IDKhoaHoc: number }) => item.IDKhoaHoc);
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) return []; // Nếu không có token thì trả về mảng rỗng
+            
+            const { data } = await axios.get(`${BASE_URL}/favorites`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            return data?.content?.map((item: { IDKhoaHoc: number }) => item.IDKhoaHoc) || [];
+        } catch (error) {
+            console.error("Error fetching favorites:", error);
+            return []; // Nếu có lỗi thì trả về mảng rỗng
+        }
     };
 
     const { data: KhoaHocList = [], isLoading, isError } = useQuery<KhoaHocData[]>({
@@ -56,10 +63,11 @@ const KhoaHocComponent: React.FC = () => {
     });
 
     useEffect(() => {
-        if (!isLoadingFavorites && favoriteCoursesData.length > 0) {
+        if (favoriteCoursesData) {
             setFavoriteCourses(favoriteCoursesData);
         }
-    }, [isLoadingFavorites, favoriteCoursesData]);
+    }, [favoriteCoursesData]);
+
 
     const handleTagChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedLocation(event.target.value);
