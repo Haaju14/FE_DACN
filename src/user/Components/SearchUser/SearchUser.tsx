@@ -111,7 +111,7 @@ const GiangVienComponent: React.FC = () => {
                                 <div className="teacher-item" key={teacher.IDNguoiDung}>
                                     <img src={teacher.AnhDaiDien} alt={teacher.HoTen} />
                                     <div className="teacher-info">
-                                        <h3>{teacher.TenDangNhap}</h3>
+                                        <h3>{teacher.HoTen}</h3>
                                         <p>Email: {teacher.Email}</p>
                                         <p>Giới tính: {teacher.GioiTinh}</p>
                                         <p>Số điện thoại: {teacher.SDT}</p>

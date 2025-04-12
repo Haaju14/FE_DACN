@@ -42,7 +42,7 @@ const ManageUsers: React.FC = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [currentPage, roleFilter,   searchName]);
+  }, [currentPage, roleFilter, searchName]);
 
   const fetchUsers = async () => {
     try {
@@ -147,8 +147,8 @@ const ManageUsers: React.FC = () => {
             ? `/giangvien/put/${editUser.IDNguoiDung}`
             : `/giangvien/add`
           : editUser
-          ? `/hocvien/put/${editUser.IDNguoiDung}`
-          : `/hocvien/add`;
+            ? `/hocvien/put/${editUser.IDNguoiDung}`
+            : `/hocvien/add`;
 
       if (editUser) {
         await axios.put(`${BASE_URL}${endpoint}`, userData, config);
@@ -243,10 +243,9 @@ const ManageUsers: React.FC = () => {
         return;
       }
 
-      // Gọi API chặn người dùng
       const response = await axios.post(
         `${BASE_URL}/block/${userId}`,
-        {},
+        null,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -254,27 +253,56 @@ const ManageUsers: React.FC = () => {
         }
       );
 
-      console.log("API Response:", response);
-
-      // Kiểm tra kết quả trả về
-      if (response.data && response.data.success) {
-        message.success("Người dùng đã bị chặn thành công.");
-        setUsers(users.filter((user) => user.id !== userId)); // Xóa người dùng đã bị chặn khỏi danh sách
+      // Kiểm tra response theo cấu trúc API
+      if (response.status === 200) {
+        message.success({
+          content: response.data?.message || "Chặn người dùng thành công",
+          duration: 3,
+          className: 'custom-success-message'
+        });
+        fetchUsers(); // Cập nhật lại danh sách
       } else {
-        message.error("Chặn người dùng thất bại.");
+        message.error({
+          content: response.data?.message || "Thao tác thất bại",
+          duration: 3
+        });
       }
-    } catch (error: unknown) {
-      // Ép kiểu error về kiểu Error để sử dụng thuộc tính message
-      if (error instanceof Error) {
-        message.error(error.message || "Có lỗi xảy ra khi chặn người dùng.");
+    } catch (error: any) {
+      console.error("Error blocking user:", error);
+
+      // Xử lý các loại lỗi cụ thể
+      if (error.response) {
+        if (error.response.status === 400) {
+          message.warning({
+            content: "Người dùng đã bị chặn trước đó",
+            duration: 3
+          });
+        } else if (error.response.status === 404) {
+          message.error({
+            content: "Không tìm thấy người dùng",
+            duration: 3
+          });
+        } else {
+          message.error({
+            content: error.response.data?.message || `Lỗi server: ${error.response.status}`,
+            duration: 3
+          });
+        }
+      } else if (error.request) {
+        message.error({
+          content: "Không nhận được phản hồi từ server",
+          duration: 3
+        });
       } else {
-        message.error("Có lỗi xảy ra khi chặn người dùng.");
+        message.error({
+          content: "Lỗi khi thiết lập yêu cầu",
+          duration: 3
+        });
       }
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="manage-users-container">
       <h1>Quản lý người dùng</h1>
@@ -392,7 +420,7 @@ const ManageUsers: React.FC = () => {
           >
             <Input />
           </Form.Item>
-          
+
           <Form.Item
             label="Email"
             name="Email"
@@ -408,7 +436,7 @@ const ManageUsers: React.FC = () => {
             <Input />
           </Form.Item>
           <Form.Item label="Mật khẩu" name="MatKhau" rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}>
-              <Input.Password />
+            <Input.Password />
           </Form.Item>
           <Form.Item
             label="Giới tính"

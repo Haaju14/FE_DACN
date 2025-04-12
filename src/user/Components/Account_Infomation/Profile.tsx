@@ -5,6 +5,7 @@ import { BASE_URL } from "../../../util/fetchfromAPI";
 import axios from "axios";
 import { RootState } from "../../../redux/store";
 import { login } from "../../../redux/reducers/userReducer";
+import * as Yup from 'yup';
 
 interface ProfileProps {
   user: {
@@ -31,7 +32,24 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
+  const profileSchema = Yup.object().shape({
+    TenDangNhap: Yup.string()
+      .required('Tên đăng nhập là bắt buộc')
+      .min(6, 'Tên đăng nhập phải có ít nhất 6 ký tự')
+      .max(20, 'Tên đăng nhập không được vượt quá 20 ký tự')
+      .matches(/^[a-zA-Z0-9_]+$/, 'Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới'),
+    Email: Yup.string()
+      .required('Email là bắt buộc')
+      .email('Email không hợp lệ'),
+    HoTen: Yup.string()
+      .required('Họ tên là bắt buộc')
+      .max(50, 'Họ tên không được vượt quá 50 ký tự'),
+    SDT: Yup.string()
+      .required('Số điện thoại là bắt buộc')
+      .matches(/^[0-9]+$/, 'Số điện thoại chỉ được chứa số')
+      .min(10, 'Số điện thoại phải có ít nhất 10 số')
+      .max(11, 'Số điện thoại không được vượt quá 11 số')
+  });
 
   useEffect(() => {
     console.log("Redux state sau khi cập nhật:", userLogin);
@@ -44,6 +62,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
       HoTen: userLogin?.user.HoTen || "",
       SDT: userLogin?.user.SDT || "",
     },
+    validationSchema: profileSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
       try {
@@ -188,49 +207,65 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                       <label htmlFor="TenDangNhap">Tên đăng nhập</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control ${formik.touched.TenDangNhap && formik.errors.TenDangNhap ? 'is-invalid' : ''
+                          }`}
                         id="TenDangNhap"
                         name="TenDangNhap"
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         value={formik.values.TenDangNhap}
                       />
+                      {formik.touched.TenDangNhap && formik.errors.TenDangNhap && (
+                        <div className="invalid-feedback">{formik.errors.TenDangNhap}</div>
+                      )}
                     </div>
                     <div className="form-group">
                       <label htmlFor="Email">Email</label>
                       <input
                         type="email"
-                        className="form-control"
+                        className={`form-control ${formik.touched.Email && formik.errors.Email ? 'is-invalid' : ''
+                          }`}
                         id="Email"
                         name="Email"
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         value={formik.values.Email}
                       />
+                      {formik.touched.Email && formik.errors.Email && (
+                        <div className="invalid-feedback">{formik.errors.Email}</div>
+                      )}
                     </div>
                     <div className="form-group">
                       <label htmlFor="HoTen">Họ tên</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control ${formik.touched.HoTen && formik.errors.HoTen ? 'is-invalid' : ''
+                          }`}
                         id="HoTen"
                         name="HoTen"
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         value={formik.values.HoTen}
                       />
+                      {formik.touched.HoTen && formik.errors.HoTen && (
+                        <div className="invalid-feedback">{formik.errors.HoTen}</div>
+                      )}
                     </div>
                     <div className="form-group">
                       <label htmlFor="SDT">Số điện thoại</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control ${formik.touched.SDT && formik.errors.SDT ? 'is-invalid' : ''
+                          }`}
                         id="SDT"
                         name="SDT"
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         value={formik.values.SDT}
                       />
+                      {formik.touched.SDT && formik.errors.SDT && (
+                        <div className="invalid-feedback">{formik.errors.SDT}</div>
+                      )}
                     </div>
                     <div className="modal-footer">
                       <button type="submit" className="btn btn-primary">
@@ -238,7 +273,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn-primary"
+                        className="btn btn-secondary"
                         onClick={() => setShowModal(false)}
                       >
                         Hủy

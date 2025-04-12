@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Input, Select, Button } from "antd";
+import { Modal, Input, Select, Button, message } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 import "../../../../public/user/css/Cart.css";
@@ -86,7 +86,23 @@ const CartPage: React.FC = () => {
     const token = getAuthToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
+  const [formErrors, setFormErrors] = useState({
+    paymentMethod: '',
+  });
 
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = { paymentMethod: '' };
+
+    if (!paymentMethod) {
+      newErrors.paymentMethod = 'Vui lòng chọn phương thức thanh toán';
+      valid = false;
+      message.error('Vui lòng chọn phương thức thanh toán');
+    }
+
+    setFormErrors(newErrors);
+    return valid;
+  };
   const fetchCartItems = async () => {
     try {
       const headers = getAuthHeaders();
@@ -122,7 +138,12 @@ const CartPage: React.FC = () => {
   };
 
   const showPaymentModal = () => {
+    if (cartItems.length === 0) {
+      message.error("Bạn chưa có khóa học nào trong giỏ hàng");
+      return;
+    }
     setPaymentModalVisible(true);
+    setFormErrors({ paymentMethod: '' }); 
   };
 
   const handleCancelPayment = () => {
@@ -165,28 +186,37 @@ const CartPage: React.FC = () => {
     }
   };
   const handleConfirmPayment = async (orderCode?: string) => {
-    const headers = getAuthHeaders();
-    const paymentData = {
-      PhuongThucThanhToan: paymentMethod || "VNPAY",
-      NoiDungThanhToan: paymentNote || "Thanh toán giỏ hàng",
-    };
+
+    if (!validateForm()) {
+      return;
+    }
+
+    // Nếu chọn VNPAY mà không có orderCode
     if (paymentMethod === "VNPAY" && (!orderCode || orderCode.trim() === "")) {
       await handleVNPayPayment();
       return;
     }
+
     try {
+      const headers = getAuthHeaders();
+      const paymentData = {
+        PhuongThucThanhToan: paymentMethod,
+        NoiDungThanhToan: paymentNote || "Thanh toán giỏ hàng",
+      };
+
       const response = await axios.post(
         `${BASE_URL}/thanh-toan/add`,
         paymentData,
         { headers }
       );
+
       console.log("Thanh toán thành công:", response.data);
       setCartItems([]);
-      alert("Thanh toán thành công!");
+      message.success("Thanh toán thành công!");
       setPaymentModalVisible(false);
     } catch (error) {
       console.error("Lỗi khi thanh toán:", error);
-      alert("Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại.");
+      message.error("Đã xảy ra lỗi trong quá trình thanh toán. Vui lòng thử lại.");
     }
   };
 

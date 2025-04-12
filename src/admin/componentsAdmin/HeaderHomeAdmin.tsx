@@ -44,6 +44,18 @@ const HeaderHomeAdmin: React.FC = () => {
                   <span className="fw-bold">{userLogin?.user.TenDangNhap}</span>
                 </span>
               </NavLink>
+              {/* Nút Logout hiển thị bên cạnh tên người dùng */}
+              <button 
+                className="btn btn-sm btn-danger ms-2"
+                onClick={handleLogOut}
+                style={{
+                  padding: '0.25rem 0.5rem',
+                  fontSize: '0.875rem'
+                }}
+              >
+                Logout
+              </button>
+              
               <ul className="dropdown-menu dropdown-user animated fadeIn">
                 <div className="dropdown-user-scroll scrollbar-outer">
                   <li>

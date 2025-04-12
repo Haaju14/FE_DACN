@@ -434,13 +434,7 @@ const ChatApp: React.FC = () => {
                   key={`${item.IDNguoiDung}-${index}`}
                   className={isCurrentUser ? "self" : "other"}
                 >
-                  {!isCurrentUser && !isCourseChat && (
-                    <img
-                      src={item.AnhDaiDien || "default-avatar.jpg"}
-                      alt="Avatar"
-                      className="message-avatar"
-                    />
-                  )}
+                  
                   <div
                     className={`message-box ${isCurrentUser ? "self" : "other"
                       }`}
